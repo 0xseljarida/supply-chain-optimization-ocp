@@ -1,0 +1,188 @@
+% ============================================================
+%  CHAPITRE II : État de l'art
+% ============================================================
+\chapter{État de l'art}
+\label{chap:etat_art}
+
+\section*{Introduction}
+
+Ce chapitre présente une revue de la littérature couvrant les domaines de l'\gls{ia} et de la cybersécurité. Nous y analysons les approches existantes, les architectures de modèles utilisés et les métriques d'évaluation pertinentes.
+
+% -------------------------------------------------------
+\section{Intelligence artificielle et apprentissage automatique}
+\label{sec:ia_ml}
+
+\subsection{Définitions fondamentales}
+
+\iacsdefinition{Machine Learning}{
+  Le \gls{ml} est une branche de l'\gls{ia} qui permet aux machines d'apprendre à partir de données sans être explicitement programmées. On distingue trois paradigmes principaux : l'apprentissage supervisé, non supervisé et par renforcement (\gls{rl}).
+}
+
+\subsection{Réseaux de neurones convolutifs}
+
+Les \gls{cnn} sont des architectures de \gls{dl} particulièrement adaptées au traitement d'images et de données structurées. L'opération de convolution est définie par l'équation~\eqref{eq:convolution} :
+
+\begin{equation}
+  (f * g)(t) = \int_{-\infty}^{+\infty} f(\tau) \cdot g(t - \tau) \, d\tau
+  \label{eq:convolution}
+\end{equation}
+
+La sortie d'une couche de convolution discrète à deux dimensions s'exprime comme :
+
+\begin{equation}
+  S(i, j) = \sum_{m} \sum_{n} I(i+m, j+n) \cdot K(m, n) + b
+  \label{eq:conv2d}
+\end{equation}
+
+où $I$ est l'entrée, $K$ le noyau de convolution et $b$ le biais.
+
+\subsection{Fonctions d'activation}
+
+Le tableau~\ref{tab:activations} présente les principales fonctions d'activation utilisées dans les réseaux de neurones.
+
+\begin{table}[H]
+  \centering
+  \caption{Fonctions d'activation courantes}
+  \label{tab:activations}
+  \renewcommand{\arraystretch}{1.5}
+  \begin{tabular}{|l|c|c|}
+    \hline
+    \rowcolor{iacsTableHead}
+    \textcolor{white}{\textbf{Fonction}} & 
+    \textcolor{white}{\textbf{Expression}} & 
+    \textcolor{white}{\textbf{Plage}} \\
+    \hline
+    ReLU & $f(x) = \max(0, x)$ & $[0, +\infty[$ \\
+    \hline
+    \rowcolor{iacsLightGray}
+    Sigmoid & $\sigma(x) = \dfrac{1}{1 + e^{-x}}$ & $]0, 1[$ \\
+    \hline
+    Tanh & $\tanh(x) = \dfrac{e^x - e^{-x}}{e^x + e^{-x}}$ & $]-1, 1[$ \\
+    \hline
+    \rowcolor{iacsLightGray}
+    Softmax & $\sigma(z_i) = \dfrac{e^{z_i}}{\sum_{j} e^{z_j}}$ & $]0, 1[$ \\
+    \hline
+  \end{tabular}
+\end{table}
+
+% -------------------------------------------------------
+\section{Cybersécurité et détection d'intrusions}
+\label{sec:cyber}
+
+\subsection{Taxonomie des attaques réseau}
+
+Les attaques réseau peuvent être classifiées en plusieurs catégories :
+
+\begin{enumerate}
+  \item \textbf{Attaques de déni de service (\gls{ddos})} : visant à rendre un service indisponible
+  \item \textbf{Attaques d'injection (\gls{xss}, SQL Injection)} : exploitant les failles des applications web
+  \item \textbf{Attaques de type Man-in-the-Middle} : interceptant les communications
+  \item \textbf{Attaques par force brute} : tentant de deviner les identifiants
+\end{enumerate}
+
+\subsection{Systèmes de détection d'intrusions}
+
+Un \gls{ids} analyse le trafic réseau pour identifier les activités malveillantes. L'algorithme~\ref{algo:ids} décrit le fonctionnement simplifié d'un \gls{ids} basé sur le \gls{ml}.
+
+\begin{algorithm}[H]
+  \caption{Détection d'intrusions par apprentissage supervisé}
+  \label{algo:ids}
+  \KwEntree{Flux réseau $\mathcal{F} = \{f_1, f_2, \ldots, f_n\}$, Modèle entraîné $\mathcal{M}$}
+  \KwSortie{Étiquettes de classification $\mathcal{Y} = \{y_1, y_2, \ldots, y_n\}$}
+
+  \Pour{chaque flux $f_i \in \mathcal{F}$}{
+    $\mathbf{x}_i \leftarrow$ \texttt{extraireCaractéristiques}($f_i$)\;
+    $\hat{y}_i \leftarrow \mathcal{M}(\mathbf{x}_i)$\;
+    \uSi{$\hat{y}_i = \text{«\,malveillant\,»}$}{
+      \texttt{générerAlerte}($f_i$, $\hat{y}_i$)\;
+      \texttt{loguer}($f_i$, $\hat{y}_i$, horodatage)\;
+    }
+    \Sinon{
+      \texttt{autoriser}($f_i$)\;
+    }
+  }
+  \Retour{$\mathcal{Y}$}
+\end{algorithm}
+
+% -------------------------------------------------------
+\section{Métriques d'évaluation}
+\label{sec:metriques}
+
+Les performances des modèles sont évaluées à l'aide des métriques suivantes :
+
+\begin{align}
+  \text{Précision}   &= \frac{VP}{VP + FP} \label{eq:precision} \\[6pt]
+  \text{Rappel}      &= \frac{VP}{VP + FN} \label{eq:rappel} \\[6pt]
+  \text{F1-score}    &= 2 \cdot \frac{\text{Précision} \times \text{Rappel}}{\text{Précision} + \text{Rappel}} \label{eq:f1}
+\end{align}
+
+où $VP$ désigne les vrais positifs, $FP$ les faux positifs et $FN$ les faux négatifs.
+
+% -------------------------------------------------------
+\section{Exemple de code source}
+\label{sec:code}
+
+Le listing~\ref{lst:python} montre un exemple de prétraitement de données réseau en Python.
+
+\begin{lstlisting}[language=Python, caption={Prétraitement des données réseau}, label={lst:python}]
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+
+# Chargement du jeu de donnees
+df = pd.read_csv("network_traffic.csv")
+
+# Selection des caracteristiques
+features = ['duration', 'src_bytes', 'dst_bytes',
+            'num_failed_logins', 'count', 'srv_count']
+X = df[features]
+y = df['label']  # normal / attaque
+
+# Normalisation
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Separation train / test
+X_train, X_test, y_train, y_test = train_test_split(
+    X_scaled, y, test_size=0.2, random_state=42
+)
+\end{lstlisting}
+
+% -------------------------------------------------------
+\section{Étude comparative}
+\label{sec:comparative}
+
+Le tableau~\ref{tab:comparative} compare les travaux récents dans le domaine.
+
+\begin{table}[H]
+  \centering
+  \caption{Étude comparative des approches existantes}
+  \label{tab:comparative}
+  \renewcommand{\arraystretch}{1.3}
+  \small
+  \begin{tabularx}{\textwidth}{|l|c|c|X|}
+    \hline
+    \rowcolor{iacsTableHead}
+    \textcolor{white}{\textbf{Réf.}} & 
+    \textcolor{white}{\textbf{Méthode}} & 
+    \textcolor{white}{\textbf{Précision}} & 
+    \textcolor{white}{\textbf{Observations}} \\
+    \hline
+    {[1]} & CNN & 94,5\% & Temps d'entraînement élevé \\
+    \hline
+    \rowcolor{iacsLightGray}
+    {[2]} & LSTM & 93,2\% & Adapté aux séries temporelles \\
+    \hline
+    {[3]} & Random Forest & 91,8\% & Interprétabilité limitée \\
+    \hline
+    \rowcolor{iacsLightGray}
+    {[4]} & Autoencoder & 92,1\% & Non supervisé \\
+    \hline
+    \textbf{Notre approche} & \textbf{CNN hybride} & \textbf{96,3\%} & \textbf{Temps réel} \\
+    \hline
+  \end{tabularx}
+\end{table}
+
+\section*{Conclusion}
+
+Ce chapitre a permis de dresser un panorama des techniques existantes en matière de détection d'intrusions basée sur l'\gls{ia}. L'analyse comparative a mis en évidence les limites des approches actuelles, justifiant ainsi la solution proposée dans le chapitre suivant.

@@ -1,0 +1,55 @@
+% ============================================================
+%  CONCLUSION GÉNÉRALE
+% ============================================================
+\chapter*{Conclusion générale et perspectives}
+\addcontentsline{toc}{chapter}{Conclusion générale et perspectives}
+\markboth{Conclusion générale}{Conclusion générale}
+
+\hspace{1cm}Ce projet a porté sur l'optimisation de la gestion des stocks au
+sein de la \gls{sc} du groupe \gls{ocp}. Il s'agissait de dimensionner les
+règles de réapprovisionnement de manière à répondre à la demande de
+l'exploitation tout en maîtrisant le capital immobilisé.
+
+\vspace{0.5cm}
+\textbf{Bilan des réalisations :}
+
+\begin{itemize}
+  \item Une chaîne de traitement reproductible a été mise en place, de l'export
+    brut jusqu'aux paramètres de gestion, à partir d'outils exclusivement
+    libres.
+  \item Le portefeuille de références a été segmenté par la matrice
+    \gls{abc}/\gls{xyz}, permettant d'associer à chaque segment un mode de
+    gestion adapté plutôt qu'une règle unique.
+  \item Les stocks de sécurité et points de commande ont été recalculés en
+    tenant compte simultanément de la variabilité de la demande et de celle des
+    délais fournisseurs.
+  \item [Rappeler ici les gains chiffrés obtenus, en taux de service et en
+    valeur de stock.]
+  \item Un tableau de bord a été livré aux équipes, leur permettant de simuler
+    l'effet d'un taux de service cible avant décision.
+\end{itemize}
+
+\vspace{0.5cm}
+\textbf{Limites du travail :}
+
+Les résultats reposent sur une simulation à partir de l'historique disponible.
+Ils dépendent d'hypothèses de coûts qui devront être confirmées, et l'hypothèse
+de normalité de la demande reste discutable pour les références à consommation
+intermittente.
+
+\vspace{0.5cm}
+\textbf{Perspectives :}
+
+\begin{enumerate}
+  \item Traiter les références à demande intermittente par des méthodes
+    dédiées (Croston, lois de Poisson) plutôt que par l'approximation normale.
+  \item Automatiser l'actualisation des paramètres par une connexion directe à
+    l'\gls{erp}, en remplacement de l'export manuel.
+  \item Étendre la démarche à l'amont de la chaîne : sélection et évaluation des
+    fournisseurs sur la fiabilité de leurs délais, levier plus efficace que
+    l'augmentation du stock.
+  \item Mettre en place un suivi périodique des indicateurs afin de mesurer
+    l'écart entre les gains simulés et les gains réellement constatés.
+  \item Élargir le périmètre aux autres familles d'articles et aux autres sites
+    du groupe.
+\end{enumerate}

@@ -1,0 +1,240 @@
+% ============================================================
+%  CHAPITRE I : Contexte général et problématique
+% ============================================================
+\chapter{Contexte général et problématique}
+\label{chap:contexte}
+
+\section*{Introduction}
+
+Ce chapitre situe le cadre du projet. Il présente l'organisme d'accueil et son
+organisation logistique, décrit la situation actuelle de la gestion des stocks,
+formule la problématique retenue et précise le cahier des charges ainsi que la
+planification adoptée.
+
+% -------------------------------------------------------
+\section{Présentation de l'organisme d'accueil}
+\label{sec:organisme}
+
+\subsection{Le groupe OCP}
+
+\hspace{1cm}[Présenter le groupe \gls{ocp} : historique, métiers (extraction,
+valorisation, commercialisation des phosphates et dérivés), implantations
+géographiques, chiffres clés et position sur le marché mondial. Citer les
+sources utilisées, par exemple le rapport annuel du groupe.]
+
+\subsection{Le site d'accueil et l'entité de rattachement}
+
+\hspace{1cm}[Décrire le site sur lequel s'est déroulé le stage ainsi que
+l'entité d'accueil : sa mission, son périmètre et sa place dans l'organisation
+du groupe.]
+
+\subsection{Structure organisationnelle}
+
+La figure~\ref{fig:organigramme} présente la position de l'entité d'accueil au
+sein de l'organisation.
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+    node distance=1.5cm,
+    box/.style={
+      rectangle, draw=iacsTeal, fill=iacsLight!40,
+      rounded corners=4pt, minimum width=3.5cm,
+      minimum height=0.9cm, align=center,
+      font=\small\sffamily
+    },
+    arrow/.style={-Stealth, thick, color=iacsTeal}
+  ]
+    \node[box, fill=iacsTeal!20, font=\small\sffamily\bfseries] (dg) {Direction du site};
+    \node[box, below left=1.2cm and 1.2cm of dg] (achat) {Achats};
+    \node[box, below=1.2cm of dg] (log) {Supply Chain\\/ Logistique};
+    \node[box, below right=1.2cm and 1.2cm of dg] (maint) {Maintenance};
+    \node[box, below=1.2cm of log, fill=iacsGreen!20] (mag) {Gestion des stocks\\(magasins)};
+
+    \draw[arrow] (dg) -- (achat);
+    \draw[arrow] (dg) -- (log);
+    \draw[arrow] (dg) -- (maint);
+    \draw[arrow] (log) -- (mag);
+  \end{tikzpicture}
+  \caption{Positionnement de l'entité d'accueil dans l'organisation}
+  \label{fig:organigramme}
+\end{figure}
+
+\iacsnote{Remplacer cet organigramme par l'organigramme réel communiqué par
+l'encadrant industriel.}
+
+% -------------------------------------------------------
+\section{Le processus de gestion des stocks}
+\label{sec:processus}
+
+\subsection{Description du flux actuel}
+
+La figure~\ref{fig:flux_appro} schématise le cycle de réapprovisionnement, de
+l'expression du besoin jusqu'à la mise à disposition de l'article.
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+    node distance=0.9cm and 1.2cm,
+    step/.style={
+      rectangle, draw=iacsTeal, fill=iacsLight!50,
+      rounded corners=4pt, minimum width=2.6cm,
+      minimum height=1cm, align=center,
+      font=\scriptsize\sffamily
+    },
+    arrow/.style={-Stealth, thick, color=iacsTeal}
+  ]
+    \node[step] (besoin)   {Expression\\du besoin};
+    \node[step, right=of besoin]  (da)   {Demande\\d'achat};
+    \node[step, right=of da]      (cmd)  {Commande\\fournisseur};
+    \node[step, below=1.2cm of cmd] (recep) {Réception\\\& contrôle};
+    \node[step, left=of recep]    (stock) {Mise en\\stock};
+    \node[step, left=of stock]    (sortie){Sortie pour\\consommation};
+
+    \draw[arrow] (besoin) -- (da);
+    \draw[arrow] (da) -- (cmd);
+    \draw[arrow] (cmd) -- (recep);
+    \draw[arrow] (recep) -- (stock);
+    \draw[arrow] (stock) -- (sortie);
+  \end{tikzpicture}
+  \caption{Cycle de réapprovisionnement et de consommation}
+  \label{fig:flux_appro}
+\end{figure}
+
+\subsection{Système d'information et données disponibles}
+
+\hspace{1cm}[Préciser l'outil de gestion utilisé (\gls{erp} de type \gls{sap} ou
+autre), les données extraites, leur profondeur d'historique et leur granularité.]
+
+\subsection{Diagnostic de la situation actuelle}
+
+\hspace{1cm}[Restituer ici le diagnostic établi à partir des entretiens et des
+premières analyses de données : niveau de service constaté, valeur du stock,
+taux de rotation, part des références dormantes, respect des délais
+fournisseurs.]
+
+% -------------------------------------------------------
+\section{Problématique et objectifs}
+\label{sec:problematique}
+
+\subsection{Problématique}
+
+\hspace{1cm}La gestion des stocks fait face à un arbitrage structurel. Un stock
+insuffisant expose à des \textbf{ruptures}, dont le coût réel n'est pas celui de
+l'article manquant mais celui de l'arrêt d'exploitation qu'il provoque. À
+l'inverse, un stock excédentaire immobilise du capital, occupe de l'espace et
+expose au risque d'obsolescence.
+
+Cet arbitrage est compliqué par deux sources d'incertitude : la
+\textbf{variabilité de la consommation} et celle des \textbf{délais
+fournisseurs}. En l'absence de règles de réapprovisionnement dimensionnées sur
+ces variabilités, les niveaux de stock résultent le plus souvent de décisions
+empiriques, hétérogènes d'une référence à l'autre.
+
+La question posée est donc la suivante : \emph{comment dimensionner les
+paramètres de gestion des stocks de manière à garantir un taux de service cible
+tout en minimisant la valeur du stock immobilisé ?}
+
+\iacsnote{Étayer la problématique par des chiffres issus des données réelles
+(nombre de ruptures constatées, valeur du stock dormant, écart entre délai
+théorique et délai réel).}
+
+\subsection{Objectifs du projet}
+
+Les objectifs principaux de ce projet sont :
+
+\begin{itemize}
+  \item Constituer et fiabiliser une base de données exploitable à partir des
+    historiques de consommation et de stock.
+  \item Segmenter le portefeuille de références selon leur valeur
+    (classification \gls{abc}) et la régularité de leur demande
+    (classification \gls{xyz}).
+  \item Caractériser statistiquement la demande et les délais de
+    réapprovisionnement de chaque segment.
+  \item Calculer les paramètres de gestion (stock de sécurité, point de
+    commande, quantité de commande) adaptés à chaque classe.
+  \item Quantifier les gains attendus en taux de service et en valeur de stock.
+  \item Livrer un outil d'aide à la décision exploitable par les équipes.
+\end{itemize}
+
+\subsection{Cahier des charges}
+
+Le tableau~\ref{tab:cahier_charges} résume les spécifications retenues.
+
+\begin{table}[H]
+  \centering
+  \caption{Cahier des charges du projet}
+  \label{tab:cahier_charges}
+  \renewcommand{\arraystretch}{1.4}
+  \begin{tabularx}{\textwidth}{|>{\bfseries\color{iacsPrimary}}l|X|}
+    \hline
+    \rowcolor{iacsTeal}
+    \textbf{\textcolor{white}{Critère}} & \textbf{\textcolor{white}{Description}} \\
+    \hline
+    Périmètre & [Familles ou références retenues, à arrêter avec l'encadrant] \\
+    \hline
+    Données d'entrée & Historique des consommations et des stocks sur 2 à 3 ans, au format Excel \\
+    \hline
+    Fonctionnalité 1 & Classification automatique des références (\gls{abc}/\gls{xyz}) \\
+    \hline
+    Fonctionnalité 2 & Calcul du stock de sécurité et du point de commande par référence \\
+    \hline
+    Fonctionnalité 3 & Simulation de l'impact d'un taux de service cible sur la valeur du stock \\
+    \hline
+    Fonctionnalité 4 & Tableau de bord interactif et export des résultats sous Excel \\
+    \hline
+    Contrainte & Solution reposant exclusivement sur des outils libres et gratuits \\
+    \hline
+    Livrable & Rapport, code source versionné et tableau de bord opérationnel \\
+    \hline
+  \end{tabularx}
+\end{table}
+
+% -------------------------------------------------------
+\section{Planification du projet}
+\label{sec:planification}
+
+La figure~\ref{fig:gantt} illustre le déroulement prévisionnel du projet.
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[x=0.9cm, y=0.7cm]
+    % --- Fond alterné ---
+    \fill[iacsLightGray] (0,-0.5) rectangle (12,0.5);
+    \fill[white]         (0,-1.5) rectangle (12,-0.5);
+    \fill[iacsLightGray] (0,-2.5) rectangle (12,-1.5);
+    \fill[white]         (0,-3.5) rectangle (12,-2.5);
+    \fill[iacsLightGray] (0,-4.5) rectangle (12,-3.5);
+    \fill[white]         (0,-5.5) rectangle (12,-4.5);
+
+    % --- Barres du Gantt ---
+    \fill[iacsTeal,          rounded corners=2pt] (0.2,0.1)   rectangle (2.2,0.4);
+    \fill[iacsAccent,        rounded corners=2pt] (1.8,-0.9)  rectangle (4.5,-0.6);
+    \fill[iacsGreen!80!black,rounded corners=2pt] (4.2,-1.9)  rectangle (7.0,-1.6);
+    \fill[iacsOrange,        rounded corners=2pt] (6.5,-2.9)  rectangle (9.0,-2.6);
+    \fill[iacsRed!80,        rounded corners=2pt] (8.5,-3.9)  rectangle (10.5,-3.6);
+    \fill[iacsSecondary,     rounded corners=2pt] (2.0,-4.9)  rectangle (11.8,-4.6);
+
+    % --- Labels ---
+    \node[anchor=east, font=\small\sffamily] at (-0.2, 0) {Cadrage \& entretiens};
+    \node[anchor=east, font=\small\sffamily] at (-0.2,-1) {Collecte \& nettoyage};
+    \node[anchor=east, font=\small\sffamily] at (-0.2,-2) {Analyse \& segmentation};
+    \node[anchor=east, font=\small\sffamily] at (-0.2,-3) {Modélisation \& calculs};
+    \node[anchor=east, font=\small\sffamily] at (-0.2,-4) {Tableau de bord};
+    \node[anchor=east, font=\small\sffamily] at (-0.2,-5) {Rédaction du rapport};
+
+    % --- Axe semaines ---
+    \foreach \m/\n in {0/S1, 2/S2, 4/S3, 6/S4, 8/S5, 10/S6} {
+      \node[anchor=north, font=\scriptsize\sffamily\color{iacsGray}] at (\m+1, 1) {\n};
+    }
+    \draw[iacsGray, thin] (0,0.7) -- (12,0.7);
+  \end{tikzpicture}
+  \caption{Diagramme de Gantt prévisionnel du projet}
+  \label{fig:gantt}
+\end{figure}
+
+\section*{Conclusion}
+
+Ce chapitre a situé le cadre du projet, décrit le processus de gestion des
+stocks en place et formulé la problématique retenue. Le chapitre suivant
+présente les fondements théoriques et les méthodes mobilisées pour y répondre.

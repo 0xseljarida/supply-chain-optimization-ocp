@@ -1,0 +1,139 @@
+% ============================================================
+%  CHAPITRE I : Contexte général et problématique
+% ============================================================
+\chapter{Contexte général et problématique}
+\label{chap:contexte}
+
+\section*{Introduction}
+
+Ce chapitre présente le contexte général du projet, l'organisme d'accueil, la problématique identifiée ainsi que le cahier des charges établi. Il constitue le socle sur lequel repose l'ensemble du travail réalisé dans le cadre de ce \gls{pfe}.
+
+% -------------------------------------------------------
+\section{Présentation de l'organisme d'accueil}
+\label{sec:organisme}
+
+\subsection{Historique et domaine d'activité}
+
+\hspace{1cm}Texte de présentation de l'organisme d'accueil. Décrire brièvement son histoire, ses missions principales et son positionnement dans le domaine de l'\gls{ia} ou de la cybersécurité.
+
+\subsection{Structure organisationnelle}
+
+La figure~\ref{fig:organigramme} présente l'organigramme de l'organisme d'accueil.
+
+\begin{figure}[H]
+  \centering
+  % --- Organigramme avec TikZ ---
+  \begin{tikzpicture}[
+    node distance=1.5cm,
+    box/.style={
+      rectangle, draw=iacsTeal, fill=iacsLight!40,
+      rounded corners=4pt, minimum width=3.5cm,
+      minimum height=0.9cm, align=center,
+      font=\small\sffamily
+    },
+    arrow/.style={-Stealth, thick, color=iacsTeal}
+  ]
+    \node[box, fill=iacsTeal!20, font=\small\sffamily\bfseries] (dg) {Direction Générale};
+    \node[box, below left=1.2cm and 1cm of dg] (dsi) {DSI};
+    \node[box, below=1.2cm of dg] (rd) {R\&D};
+    \node[box, below right=1.2cm and 1cm of dg] (sec) {Sécurité};
+
+    \draw[arrow] (dg) -- (dsi);
+    \draw[arrow] (dg) -- (rd);
+    \draw[arrow] (dg) -- (sec);
+  \end{tikzpicture}
+  \caption{Organigramme de l'organisme d'accueil}
+  \label{fig:organigramme}
+\end{figure}
+
+% -------------------------------------------------------
+\section{Problématique et objectifs}
+\label{sec:problematique}
+
+\subsection{Problématique}
+
+\hspace{1cm}Décrire ici la problématique abordée. Par exemple, la détection d'intrusions dans les réseaux informatiques à l'aide de techniques de \gls{dl} représente un enjeu majeur pour la sécurité des systèmes d'information modernes.
+
+\iacsnote{La problématique doit être clairement définie et justifiée par des chiffres ou des références récentes.}
+
+\subsection{Objectifs du projet}
+
+Les objectifs principaux de ce projet sont :
+
+\begin{itemize}
+  \item Étudier les approches existantes en matière de détection d'intrusions basées sur l'\gls{ia}
+  \item Concevoir un modèle de \gls{cnn} adapté à la classification du trafic réseau
+  \item Implémenter et évaluer les performances du système proposé
+  \item Comparer les résultats avec les méthodes de l'état de l'art
+\end{itemize}
+
+\subsection{Cahier des charges}
+
+Le tableau~\ref{tab:cahier_charges} résume les spécifications fonctionnelles et non fonctionnelles du projet.
+
+\begin{table}[H]
+  \centering
+  \caption{Cahier des charges du projet}
+  \label{tab:cahier_charges}
+  \renewcommand{\arraystretch}{1.4}
+  \begin{tabularx}{\textwidth}{|>{\bfseries\color{iacsPrimary}}l|X|}
+    \hline
+    \rowcolor{iacsTeal!15}
+    \textbf{\textcolor{white}{Critère}} & \textbf{\textcolor{white}{Description}} \\
+    \hline
+    Fonctionnalité 1 & Détection en temps réel des tentatives d'intrusion \\
+    \hline
+    Fonctionnalité 2 & Classification multi-classes des types d'attaques (\gls{ddos}, \gls{xss}, etc.) \\
+    \hline
+    Performance & Précision $\geq$ 95\% sur le jeu de données de test \\
+    \hline
+    Temps de réponse & Latence de détection $\leq$ 100 ms \\
+    \hline
+    Scalabilité & Support de plus de 10\,000 connexions simultanées \\
+    \hline
+  \end{tabularx}
+\end{table}
+
+% -------------------------------------------------------
+\section{Planification du projet}
+\label{sec:planification}
+
+La figure~\ref{fig:gantt} illustre le diagramme de Gantt du projet.
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[x=0.9cm, y=0.7cm]
+    % --- Fond alterné ---
+    \fill[iacsLightGray] (0,-0.5) rectangle (12,0.5);
+    \fill[white]          (0,-1.5) rectangle (12,-0.5);
+    \fill[iacsLightGray] (0,-2.5) rectangle (12,-1.5);
+    \fill[white]          (0,-3.5) rectangle (12,-2.5);
+    \fill[iacsLightGray] (0,-4.5) rectangle (12,-3.5);
+
+    % --- Barres du Gantt ---
+    \fill[iacsTeal, rounded corners=2pt] (0.2,0.1) rectangle (2.8,0.4);
+    \fill[iacsAccent, rounded corners=2pt] (2.5,-0.9) rectangle (5.5,-0.6);
+    \fill[iacsGreen!80!black, rounded corners=2pt] (5,-1.9) rectangle (8.5,-1.6);
+    \fill[iacsOrange, rounded corners=2pt] (8,-2.9) rectangle (10.5,-2.6);
+    \fill[iacsRed!80, rounded corners=2pt] (10,-3.9) rectangle (11.8,-3.6);
+
+    % --- Labels ---
+    \node[anchor=east, font=\small\sffamily] at (-0.2, 0) {Étude bibliographique};
+    \node[anchor=east, font=\small\sffamily] at (-0.2,-1) {Conception};
+    \node[anchor=east, font=\small\sffamily] at (-0.2,-2) {Implémentation};
+    \node[anchor=east, font=\small\sffamily] at (-0.2,-3) {Tests \& validation};
+    \node[anchor=east, font=\small\sffamily] at (-0.2,-4) {Rédaction};
+
+    % --- Axe mois ---
+    \foreach \m/\n in {0/Fév, 2/Mars, 4/Avr, 6/Mai, 8/Juin, 10/Juil} {
+      \node[anchor=north, font=\scriptsize\sffamily\color{iacsGray}] at (\m+1, 1) {\n};
+    }
+    \draw[iacsGray, thin] (0,0.7) -- (12,0.7);
+  \end{tikzpicture}
+  \caption{Diagramme de Gantt du projet}
+  \label{fig:gantt}
+\end{figure}
+
+\section*{Conclusion}
+
+Ce chapitre a permis de situer le cadre général du projet, de définir la problématique et de formuler les objectifs. Le chapitre suivant sera consacré à l'état de l'art et à l'étude des solutions existantes.

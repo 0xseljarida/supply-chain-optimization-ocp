@@ -1,0 +1,258 @@
+% ============================================================
+%  PACKAGES & CONFIGURATION — IACS Template
+%  Intelligence Artificielle et Cybersécurité
+%  ENSA Béni Mellal
+% ============================================================
+
+% --- Encodage et langue ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{csquotes}
+
+% --- Polices ---
+\usepackage{mathptmx}          % Times New Roman (corps du texte)
+\usepackage{helvet}            % Helvetica pour les titres
+\usepackage{courier}           % Courier pour le code
+
+% --- Géométrie de la page ---
+\usepackage[
+  a4paper,
+  top=2.5cm,
+  bottom=2.5cm,
+  left=2.5cm,
+  right=2.5cm,
+  headheight=15pt
+]{geometry}
+
+% --- Couleurs IACS ---
+\usepackage[table,xcdraw,dvipsnames]{xcolor}
+
+% Palette principale IACS — Bleu foncé #000099
+\definecolor{iacsPrimary}{HTML}{000099}      % Bleu foncé principal
+\definecolor{iacsSecondary}{HTML}{000066}    % Bleu très foncé
+\definecolor{iacsAccent}{HTML}{3366CC}       % Bleu moyen (accents, liens)
+\definecolor{iacsTeal}{HTML}{000099}         % Bleu principal (puces, titres)
+\definecolor{iacsLight}{HTML}{E8EEFF}        % Bleu très clair (fonds)
+\definecolor{iacsGreen}{HTML}{06D6A0}        % Vert IA
+\definecolor{iacsOrange}{HTML}{F77F00}       % Orange alerte (cyber)
+\definecolor{iacsRed}{HTML}{D62828}          % Rouge alerte
+\definecolor{iacsGray}{HTML}{6C757D}         % Gris neutre
+\definecolor{iacsLightGray}{HTML}{E9ECEF}    % Gris clair (fonds tableaux)
+\definecolor{iacsDark}{HTML}{212529}         % Quasi-noir (texte)
+\definecolor{iacsTableHead}{HTML}{000099}    % En-tête tableaux
+\definecolor{iacsChapterBg}{HTML}{E8EEFF}    % Fond page de chapitre
+
+% --- Graphiques et figures ---
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage{wrapfig}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, shadows, decorations.markings}
+
+% --- Tableaux ---
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{colortbl}
+\usepackage{tabularx}
+
+% --- Listes ---
+\usepackage{enumitem}
+\setlist[itemize]{
+  label=\textcolor{iacsTeal}{\textbullet},
+  leftmargin=1.5em,
+  itemsep=3pt
+}
+\setlist[itemize,2]{
+  label=\textcolor{iacsAccent}{--},
+  leftmargin=1.5em
+}
+\setlist[enumerate]{
+  label=\textcolor{iacsTeal}{\arabic*.},
+  leftmargin=1.5em,
+  itemsep=3pt
+}
+
+% --- Code source ---
+\usepackage{listings}
+\lstdefinestyle{iacscode}{
+  backgroundcolor=\color{iacsPrimary!5},
+  basicstyle=\ttfamily\small\color{iacsDark},
+  keywordstyle=\bfseries\color{iacsTeal},
+  stringstyle=\color{iacsGreen},
+  commentstyle=\itshape\color{iacsGray},
+  numberstyle=\tiny\color{iacsGray},
+  numbers=left,
+  numbersep=8pt,
+  frame=l,
+  framerule=2pt,
+  rulecolor=\color{iacsAccent},
+  breaklines=true,
+  captionpos=b,
+  tabsize=2,
+  showstringspaces=false
+}
+\lstset{style=iacscode}
+
+% --- Algorithmes ---
+\usepackage[ruled,vlined,french]{algorithm2e}
+\SetAlgoLined
+\SetKwInput{KwEntree}{Entrée}
+\SetKwInput{KwSortie}{Sortie}
+
+% --- Mathématiques ---
+\usepackage{amsmath,amssymb,amsfonts}
+
+% --- En-têtes et pieds de page ---
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{iacsGray}{\leftmark}}
+\fancyhead[R]{\small\textcolor{iacsGray}{PFE -- IACS 2025/2026}}
+\fancyfoot[C]{\thepage}
+\fancyfoot[R]{\small\textcolor{iacsGray}{ENSA Béni Mellal}}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{iacsTeal}\leaders\hrule height \headrulewidth\hfill}}
+\renewcommand{\footrulewidth}{0.3pt}
+\renewcommand{\footrule}{\hbox to\headwidth{\color{iacsAccent}\leaders\hrule height \footrulewidth\hfill}}
+
+% --- Titres des chapitres et sections ---
+\usepackage{titlesec}
+
+% Style Chapitre — bande colorée latérale
+\titleformat{\chapter}[display]
+  {\normalfont\Huge\bfseries\sffamily\color{iacsPrimary}}
+  {\tikz[remember picture,overlay]{
+    \fill[iacsTeal] (current page.north west) rectangle ([xshift=1.2cm]current page.south west);
+    \node[rotate=90, anchor=south, font=\fontsize{60}{72}\selectfont\bfseries\sffamily,
+          text=white, inner sep=10pt]
+      at ([xshift=0.6cm, yshift=-5cm]current page.north west)
+      {\thechapter};
+  }}
+  {0pt}
+  {\filright\fontsize{28}{34}\selectfont}
+  [\vspace{0.5cm}{\color{iacsAccent}\titlerule[2pt]}]
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\sffamily\color{iacsSecondary}}
+  {\textcolor{iacsTeal}{\thesection}}{0.8em}{}
+  [{\color{iacsAccent}\titlerule[0.8pt]}]
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\sffamily\color{iacsSecondary}}
+  {\textcolor{iacsTeal}{\thesubsection}}{0.8em}{}
+
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries\color{iacsDark}}
+  {\textcolor{iacsAccent}{\thesubsubsection}}{0.8em}{}
+
+\titlespacing*{\chapter}{0pt}{-30pt}{30pt}
+\titlespacing*{\section}{0pt}{18pt}{6pt}
+\titlespacing*{\subsection}{0pt}{12pt}{4pt}
+\titlespacing*{\subsubsection}{0pt}{8pt}{4pt}
+
+% --- Légendes figures/tableaux ---
+\usepackage[
+  font=small,
+  labelfont={bf,color=iacsTeal},
+  textfont={color=iacsDark},
+  format=hang,
+  margin=1cm
+]{caption}
+
+% --- Hyperliens ---
+\usepackage[
+  colorlinks=true,
+  linkcolor=iacsTeal,
+  citecolor=iacsTeal,
+  urlcolor=iacsAccent,
+  bookmarks=true,
+  bookmarksnumbered=true,
+  pdfstartview=FitH
+]{hyperref}
+
+% --- Bibliographie ---
+\usepackage[
+  backend=biber,
+  style=ieee,
+  sorting=nyt,
+  maxnames=3,
+  minnames=1
+]{biblatex}
+
+% --- Table des matières ---
+\usepackage{tocloft}
+\renewcommand{\cftchapfont}{\bfseries\sffamily\color{iacsTeal}}
+\renewcommand{\cftchappagefont}{\bfseries\color{iacsTeal}}
+\renewcommand{\cftsecfont}{\sffamily\color{iacsSecondary}}
+\renewcommand{\cftsecpagefont}{\color{iacsSecondary}}
+\renewcommand{\cftsubsecfont}{\color{iacsDark}}
+\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}}
+\setlength{\cftbeforechapskip}{8pt}
+
+% --- Glossaire et acronymes ---
+\usepackage[acronym,toc]{glossaries}
+\makeglossaries
+
+% --- Divers ---
+\usepackage{lipsum}            % Texte de remplissage
+\usepackage{pdfpages}          % Inclusion de PDF
+\usepackage{setspace}          % Interligne
+\onehalfspacing                % Interligne 1.5
+\setlength{\parindent}{1cm}    % Retrait première ligne
+\usepackage{etoolbox}          % Utilitaires
+
+% --- Commandes personnalisées ---
+\newcommand{\iacsnote}[1]{%
+  \begin{tcolorbox}[colback=iacsLight, colframe=iacsTeal, 
+    title={\textcolor{white}{\faInfoCircle\; Note}},
+    coltitle=white, fonttitle=\bfseries\sffamily,
+    colbacktitle=iacsTeal, boxrule=0.5pt, arc=3pt]
+    #1
+  \end{tcolorbox}
+}
+
+\newcommand{\iacswarning}[1]{%
+  \begin{tcolorbox}[colback=iacsOrange!8, colframe=iacsOrange,
+    title={\textcolor{white}{\faExclamationTriangle\; Attention}},
+    coltitle=white, fonttitle=\bfseries\sffamily,
+    colbacktitle=iacsOrange, boxrule=0.5pt, arc=3pt]
+    #1
+  \end{tcolorbox}
+}
+
+% --- Boîtes colorées ---
+\usepackage[most]{tcolorbox}
+\usepackage{fontawesome5}
+
+% Redéfinir les commandes après chargement de tcolorbox
+\renewcommand{\iacsnote}[1]{%
+  \begin{tcolorbox}[colback=iacsLight, colframe=iacsTeal,
+    title={\textcolor{white}{\faInfoCircle\; Note}},
+    coltitle=white, fonttitle=\bfseries\sffamily,
+    colbacktitle=iacsTeal, boxrule=0.5pt, arc=3pt]
+    #1
+  \end{tcolorbox}
+}
+
+\renewcommand{\iacswarning}[1]{%
+  \begin{tcolorbox}[colback=iacsOrange!8, colframe=iacsOrange,
+    title={\textcolor{white}{\faExclamationTriangle\; Attention}},
+    coltitle=white, fonttitle=\bfseries\sffamily,
+    colbacktitle=iacsOrange, boxrule=0.5pt, arc=3pt]
+    #1
+  \end{tcolorbox}
+}
+
+\newcommand{\iacsdefinition}[2]{%
+  \begin{tcolorbox}[colback=iacsGreen!5, colframe=iacsGreen,
+    title={\textcolor{white}{\faBook\; #1}},
+    coltitle=white, fonttitle=\bfseries\sffamily,
+    colbacktitle=iacsGreen!80!black, boxrule=0.5pt, arc=3pt]
+    #2
+  \end{tcolorbox}
+}

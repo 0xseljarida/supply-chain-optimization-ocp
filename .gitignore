@@ -1,0 +1,46 @@
+# --- Données (jamais versionnées : données internes OCP) ---
+analyse/data/raw/*
+analyse/data/processed/*
+!analyse/data/**/.gitkeep
+*.xlsx
+*.xls
+*.csv
+!analyse/data/**/exemple_*.csv
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+pfa/
+
+# --- LaTeX ---
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.glg
+*.glo
+*.gls
+*.ist
+*.acn
+*.acr
+*.alg
+*.lof
+*.log
+*.lot
+*.loa
+*.out
+*.run.xml
+*.toc
+*.synctex.gz
+*.xdv
+
+# --- Divers ---
+.DS_Store
+
+#PFA
+/PFA1

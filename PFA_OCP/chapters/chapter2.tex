@@ -1,0 +1,390 @@
+% ============================================================
+%  CHAPITRE II : Cadre théorique et état de l'art
+% ============================================================
+\chapter{Cadre théorique et état de l'art}
+\label{chap:etat_art}
+
+\section*{Introduction}
+
+Ce chapitre rassemble les fondements théoriques mobilisés dans le projet. Il
+rappelle d'abord le rôle et le coût des stocks, puis présente les méthodes de
+segmentation du portefeuille de références, les modèles classiques de
+réapprovisionnement, le dimensionnement du stock de sécurité, les techniques de
+prévision de la demande et enfin les indicateurs de performance retenus.
+
+% -------------------------------------------------------
+\section{Rôle et coût des stocks}
+\label{sec:role_stocks}
+
+\subsection{Fonctions du stock}
+
+\iacsdefinition{Stock}{
+  Ensemble des biens détenus par l'entreprise en attente d'utilisation ou de
+  vente. Le stock joue un rôle de tampon entre des flux d'approvisionnement et
+  de consommation qui ne sont ni synchronisés ni parfaitement prévisibles.
+}
+
+On distingue classiquement plusieurs composantes :
+
+\begin{itemize}
+  \item le \textbf{stock de cycle}, qui résulte du fait que les
+    approvisionnements se font par lots plutôt qu'à l'unité ;
+  \item le \textbf{stock de sécurité}, destiné à absorber les aléas de la
+    demande et des délais de livraison ;
+  \item le \textbf{stock en transit}, déjà commandé mais non encore réceptionné ;
+  \item le \textbf{stock mort ou dormant}, sans consommation sur une période
+    prolongée.
+\end{itemize}
+
+\subsection{Structure des coûts}
+
+Le tableau~\ref{tab:couts_stock} présente les trois familles de coûts qui
+s'opposent dans tout arbitrage de gestion de stock.
+
+\begin{table}[H]
+  \centering
+  \caption{Familles de coûts liées à la gestion des stocks}
+  \label{tab:couts_stock}
+  \renewcommand{\arraystretch}{1.4}
+  \begin{tabularx}{\textwidth}{|l|X|c|}
+    \hline
+    \rowcolor{iacsTableHead}
+    \textcolor{white}{\textbf{Famille}} &
+    \textcolor{white}{\textbf{Contenu}} &
+    \textcolor{white}{\textbf{Notation}} \\
+    \hline
+    Coût de passation &
+    Traitement de la commande, transport, réception, contrôle &
+    $S$ \\
+    \hline
+    \rowcolor{iacsLightGray}
+    Coût de possession &
+    Immobilisation financière, stockage, assurance, obsolescence &
+    $H$ \\
+    \hline
+    Coût de rupture &
+    Arrêt d'exploitation, achat en urgence, dégradation du service &
+    $C_{r}$ \\
+    \hline
+  \end{tabularx}
+\end{table}
+
+Le coût de possession est généralement exprimé en pourcentage de la valeur
+unitaire de l'article : $H = i \cdot c$, où $i$ est le taux de possession annuel
+et $c$ le coût unitaire.
+
+\iacswarning{Le coût de rupture est le plus difficile à estimer et le plus
+souvent sous-évalué. Dans un contexte industriel, il correspond au coût horaire
+d'immobilisation de l'installation, sans commune mesure avec la valeur de
+l'article manquant.}
+
+% -------------------------------------------------------
+\section{Segmentation du portefeuille de références}
+\label{sec:segmentation}
+
+\subsection{Classification ABC}
+
+La classification \gls{abc} repose sur le principe de Pareto : une faible part
+des références représente l'essentiel de la valeur consommée. Les références
+sont triées par valeur de consommation annuelle décroissante, puis réparties en
+trois classes selon la valeur cumulée.
+
+\begin{equation}
+  V_{i} = D_{i} \cdot c_{i}
+  \qquad\text{et}\qquad
+  P_{k} = \frac{\sum_{i=1}^{k} V_{(i)}}{\sum_{i=1}^{N} V_{(i)}}
+  \label{eq:abc}
+\end{equation}
+
+où $V_{i}$ est la valeur de consommation annuelle de la référence $i$, $D_{i}$
+sa consommation annuelle, $c_{i}$ son coût unitaire, et $P_{k}$ la part cumulée
+après tri décroissant.
+
+\begin{table}[H]
+  \centering
+  \caption{Seuils usuels de la classification ABC}
+  \label{tab:seuils_abc}
+  \renewcommand{\arraystretch}{1.4}
+  \begin{tabularx}{\textwidth}{|c|c|c|X|}
+    \hline
+    \rowcolor{iacsTableHead}
+    \textcolor{white}{\textbf{Classe}} &
+    \textcolor{white}{\textbf{\% valeur}} &
+    \textcolor{white}{\textbf{\% références}} &
+    \textcolor{white}{\textbf{Mode de gestion}} \\
+    \hline
+    A & $\approx 80\%$ & $\approx 20\%$ & Suivi rapproché, taux de service élevé \\
+    \hline
+    \rowcolor{iacsLightGray}
+    B & $\approx 15\%$ & $\approx 30\%$ & Gestion sur règles automatiques \\
+    \hline
+    C & $\approx 5\%$  & $\approx 50\%$ & Gestion allégée, lots de réapprovisionnement larges \\
+    \hline
+  \end{tabularx}
+\end{table}
+
+\subsection{Classification XYZ}
+
+La classification \gls{xyz} complète la précédente en caractérisant la
+\emph{régularité} de la demande plutôt que sa valeur. Elle s'appuie sur le
+coefficient de variation :
+
+\begin{equation}
+  CV = \frac{\sigma_{d}}{\bar{d}}
+  \label{eq:cv}
+\end{equation}
+
+où $\bar{d}$ est la demande moyenne par période et $\sigma_{d}$ son écart-type.
+Les références sont classées X (demande régulière, $CV$ faible), Y (demande
+variable ou saisonnière) ou Z (demande erratique, $CV$ élevé).
+
+Le croisement des deux classifications produit une matrice à neuf cases qui
+oriente le mode de gestion : les références AX se prêtent à un
+réapprovisionnement automatique à stock de sécurité réduit, tandis que les
+références AZ, coûteuses et imprévisibles, exigent un suivi manuel.
+
+\iacsnote{Le croisement ABC/XYZ constitue le point d'entrée de la démarche : il
+évite d'appliquer une règle unique à un portefeuille hétérogène.}
+
+% -------------------------------------------------------
+\section{Modèles de réapprovisionnement}
+\label{sec:modeles_appro}
+
+\subsection{Quantité économique de commande}
+
+Le modèle de Wilson détermine la quantité de commande $Q$ qui minimise la somme
+du coût de passation et du coût de possession, sous hypothèse de demande
+constante et de délai fixe. Le coût total annuel s'écrit :
+
+\begin{equation}
+  C(Q) = \frac{D}{Q} \cdot S + \frac{Q}{2} \cdot H
+  \label{eq:cout_total}
+\end{equation}
+
+L'annulation de la dérivée $\dfrac{dC}{dQ} = -\dfrac{DS}{Q^{2}} + \dfrac{H}{2}$
+conduit à la \gls{eoq} :
+
+\begin{equation}
+  Q^{*} = \sqrt{\frac{2DS}{H}}
+  \label{eq:eoq}
+\end{equation}
+
+\iacswarning{Les hypothèses du modèle de Wilson (demande déterministe et
+constante, délai fixe, absence de remise sur quantité) sont rarement vérifiées
+en pratique. Le résultat reste néanmoins un ordre de grandeur utile, la fonction
+de coût étant peu sensible autour de son optimum.}
+
+\subsection{Politiques de gestion}
+
+Deux politiques principales sont utilisées :
+
+\begin{itemize}
+  \item la politique \textbf{$(s, Q)$} — à point de commande : une quantité
+    fixe $Q$ est commandée dès que le stock disponible franchit le seuil $s$ ;
+  \item la politique \textbf{$(T, S)$} — à recomplètement périodique : le stock
+    est ramené à un niveau cible $S$ à intervalles réguliers $T$.
+\end{itemize}
+
+\subsection{Point de commande}
+
+Le point de commande \gls{rop} correspond au niveau de stock déclenchant le
+réapprovisionnement. Il couvre la consommation attendue pendant le délai de
+livraison, augmentée du stock de sécurité :
+
+\begin{equation}
+  ROP = \bar{d} \cdot L + SS
+  \label{eq:rop}
+\end{equation}
+
+où $\bar{d}$ est la demande moyenne par période et $L$ le délai de
+réapprovisionnement exprimé dans la même unité.
+
+% -------------------------------------------------------
+\section{Dimensionnement du stock de sécurité}
+\label{sec:stock_securite}
+
+\subsection{Taux de service et coefficient de sécurité}
+
+\iacsdefinition{Taux de service (cycle service level)}{
+  Probabilité de ne pas connaître de rupture au cours d'un cycle de
+  réapprovisionnement. À un taux de service cible $\alpha$ correspond un
+  coefficient $z = \Phi^{-1}(\alpha)$, quantile de la loi normale centrée
+  réduite.
+}
+
+\begin{table}[H]
+  \centering
+  \caption{Coefficient de sécurité en fonction du taux de service}
+  \label{tab:coef_z}
+  \renewcommand{\arraystretch}{1.4}
+  \begin{tabular}{|c|c|c|c|c|c|c|}
+    \hline
+    \rowcolor{iacsTableHead}
+    \textcolor{white}{\textbf{$\alpha$}} &
+    \textcolor{white}{90\%} & \textcolor{white}{95\%} &
+    \textcolor{white}{97,5\%} & \textcolor{white}{98\%} &
+    \textcolor{white}{99\%} & \textcolor{white}{99,9\%} \\
+    \hline
+    $z$ & 1,28 & 1,65 & 1,96 & 2,05 & 2,33 & 3,09 \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\subsection{Formules de calcul}
+
+Lorsque seule la demande est incertaine et que le délai est constant :
+
+\begin{equation}
+  SS = z \cdot \sigma_{d} \cdot \sqrt{L}
+  \label{eq:ss_demande}
+\end{equation}
+
+Lorsque la demande et le délai sont tous deux incertains, la formule combinée
+s'écrit :
+
+\begin{equation}
+  SS = z \cdot \sqrt{ L \cdot \sigma_{d}^{2} + \bar{d}^{\,2} \cdot \sigma_{L}^{2} }
+  \label{eq:ss_combine}
+\end{equation}
+
+où $\sigma_{d}$ est l'écart-type de la demande par période, $\sigma_{L}$ celui
+du délai de livraison, $\bar{d}$ la demande moyenne et $L$ le délai moyen.
+
+\iacsnote{L'équation~\eqref{eq:ss_combine} montre que le stock de sécurité croît
+comme la racine carrée du délai : \emph{réduire et fiabiliser les délais
+fournisseurs est souvent plus efficace que d'augmenter le stock}.}
+
+\subsection{Cas des demandes intermittentes}
+
+Pour les références à demande rare — fréquentes parmi les pièces de rechange —
+l'hypothèse de normalité n'est plus valable. La demande est alors mieux décrite
+par une loi de Poisson ou par les méthodes dédiées à la demande intermittente
+(méthode de Croston et ses variantes).
+
+% -------------------------------------------------------
+\section{Prévision de la demande}
+\label{sec:prevision}
+
+\subsection{Méthodes retenues}
+
+\begin{table}[H]
+  \centering
+  \caption{Méthodes de prévision envisagées}
+  \label{tab:methodes_prevision}
+  \renewcommand{\arraystretch}{1.4}
+  \begin{tabularx}{\textwidth}{|l|X|l|}
+    \hline
+    \rowcolor{iacsTableHead}
+    \textcolor{white}{\textbf{Méthode}} &
+    \textcolor{white}{\textbf{Principe}} &
+    \textcolor{white}{\textbf{Usage}} \\
+    \hline
+    Moyenne mobile &
+    Moyenne des $k$ dernières périodes &
+    Référence de base \\
+    \hline
+    \rowcolor{iacsLightGray}
+    Lissage exponentiel (\gls{ses}) &
+    Pondération décroissante du passé, paramètre $\alpha$ &
+    Demande stable \\
+    \hline
+    Holt-Winters &
+    Lissage avec tendance et saisonnalité &
+    Demande saisonnière \\
+    \hline
+    \rowcolor{iacsLightGray}
+    Croston &
+    Séparation intervalle / taille de demande &
+    Demande intermittente \\
+    \hline
+  \end{tabularx}
+\end{table}
+
+Le lissage exponentiel simple s'écrit :
+
+\begin{equation}
+  \hat{d}_{t+1} = \alpha \, d_{t} + (1 - \alpha) \, \hat{d}_{t},
+  \qquad 0 < \alpha < 1
+  \label{eq:ses}
+\end{equation}
+
+\subsection{Mesure de la qualité des prévisions}
+
+\begin{equation}
+  MAE = \frac{1}{n}\sum_{t=1}^{n} \left| d_{t} - \hat{d}_{t} \right|
+  \qquad
+  RMSE = \sqrt{\frac{1}{n}\sum_{t=1}^{n} \left( d_{t} - \hat{d}_{t} \right)^{2}}
+  \label{eq:erreurs}
+\end{equation}
+
+\begin{equation}
+  MAPE = \frac{100}{n}\sum_{t=1}^{n}
+    \left| \frac{d_{t} - \hat{d}_{t}}{d_{t}} \right|
+  \label{eq:mape}
+\end{equation}
+
+\iacswarning{Le \gls{mape} n'est pas défini lorsque $d_{t} = 0$, situation
+fréquente pour les références à demande intermittente. Le \gls{mae} lui est
+préféré dans ce cas.}
+
+% -------------------------------------------------------
+\section{Indicateurs de performance}
+\label{sec:kpi}
+
+\begin{table}[H]
+  \centering
+  \caption{Indicateurs de performance retenus}
+  \label{tab:kpis}
+  \renewcommand{\arraystretch}{1.5}
+  \begin{tabularx}{\textwidth}{|l|c|X|}
+    \hline
+    \rowcolor{iacsTableHead}
+    \textcolor{white}{\textbf{Indicateur}} &
+    \textcolor{white}{\textbf{Formule}} &
+    \textcolor{white}{\textbf{Interprétation}} \\
+    \hline
+    Taux de rotation &
+    $R = \dfrac{\text{Consommation}}{\text{Stock moyen}}$ &
+    Nombre de renouvellements du stock par an \\
+    \hline
+    \rowcolor{iacsLightGray}
+    Couverture &
+    $C = \dfrac{365}{R}$ &
+    Nombre de jours de consommation couverts \\
+    \hline
+    Taux de service &
+    $\dfrac{\text{Lignes servies}}{\text{Lignes demandées}}$ &
+    Capacité à répondre à la demande \\
+    \hline
+    \rowcolor{iacsLightGray}
+    Taux de rupture &
+    $1 - \text{taux de service}$ &
+    Part des demandes non satisfaites \\
+    \hline
+    Valeur du stock &
+    $\sum_{i} q_{i} \cdot c_{i}$ &
+    Capital immobilisé \\
+    \hline
+    \rowcolor{iacsLightGray}
+    Stock dormant &
+    Part sans mouvement sur 12 mois &
+    Gisement d'économies immédiat \\
+    \hline
+  \end{tabularx}
+\end{table}
+
+% -------------------------------------------------------
+\section{Travaux similaires}
+\label{sec:travaux_similaires}
+
+\hspace{1cm}[Présenter deux à quatre travaux comparables — articles, mémoires ou
+retours d'expérience industriels portant sur l'optimisation des stocks de pièces
+de rechange — et positionner la présente démarche par rapport à eux : périmètre,
+méthodes employées, résultats annoncés.]
+
+\section*{Conclusion}
+
+Ce chapitre a rassemblé les outils théoriques nécessaires : segmentation
+\gls{abc}/\gls{xyz}, modèles de réapprovisionnement, dimensionnement du stock de
+sécurité et indicateurs de suivi. Le chapitre suivant décrit leur mise en
+\oe uvre sur les données réelles de l'\gls{ocp}.

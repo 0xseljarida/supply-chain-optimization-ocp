@@ -1,0 +1,324 @@
+% ============================================================
+%  CHAPITRE III : Conception et réalisation
+% ============================================================
+\chapter{Conception et réalisation}
+\label{chap:conception}
+
+\section*{Introduction}
+
+Ce chapitre détaille la conception architecturale du système proposé, les choix technologiques ainsi que les étapes de mise en œuvre. Nous présentons également les diagrammes \gls{uml} et l'architecture globale de la solution.
+
+% -------------------------------------------------------
+\section{Architecture globale du système}
+\label{sec:architecture}
+
+\subsection{Vue d'ensemble}
+
+La figure~\ref{fig:architecture} illustre l'architecture globale du système de détection d'intrusions proposé.
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+    node distance=1.2cm and 2cm,
+    block/.style={
+      rectangle, draw=iacsTeal, fill=iacsLight!50,
+      rounded corners=5pt, minimum width=3cm,
+      minimum height=1.2cm, align=center,
+      font=\small\sffamily, line width=0.8pt,
+      drop shadow={shadow xshift=1pt, shadow yshift=-1pt, opacity=0.1}
+    },
+    dbblock/.style={
+      cylinder, draw=iacsTeal, fill=iacsGreen!15,
+      shape border rotate=90, aspect=0.25,
+      minimum width=2cm, minimum height=1.2cm,
+      font=\small\sffamily, line width=0.8pt
+    },
+    alertblock/.style={
+      block, fill=iacsOrange!15, draw=iacsOrange
+    },
+    arrow/.style={-Stealth, thick, color=iacsTeal},
+    dataarrow/.style={-Stealth, thick, color=iacsAccent, dashed}
+  ]
+    % Couche collecte
+    \node[block] (capture) {Capture\\trafic réseau};
+    \node[block, right=of capture] (preprocess) {Pré-traitement\\des données};
+    \node[block, right=of preprocess] (extract) {Extraction de\\caractéristiques};
+
+    % Couche IA
+    \node[block, below=1.5cm of extract, fill=iacsTeal!15] (model) {\textbf{Modèle CNN}\\classification};
+    \node[dbblock, left=of model] (db) {Base de\\données};
+
+    % Couche décision
+    \node[alertblock, below=1.5cm of model] (alert) {\faExclamationTriangle\; Système\\d'alerte};
+    \node[block, left=of alert] (dashboard) {\faDesktop\; Dashboard\\monitoring};
+
+    % Flèches
+    \draw[arrow] (capture) -- (preprocess);
+    \draw[arrow] (preprocess) -- (extract);
+    \draw[arrow] (extract) -- (model);
+    \draw[dataarrow] (model) -- (db);
+    \draw[arrow] (model) -- (alert);
+    \draw[dataarrow] (alert) -- (dashboard);
+    \draw[dataarrow] (db) -- (dashboard);
+
+    % Labels couches
+    \node[font=\footnotesize\sffamily\bfseries\color{iacsTeal},
+          anchor=west] at ([xshift=-1cm, yshift=0.8cm]capture.north) 
+          {\faLayerGroup\; Couche collecte};
+    \node[font=\footnotesize\sffamily\bfseries\color{iacsTeal},
+          anchor=east] at ([xshift=1cm, yshift=0.8cm]model.north) 
+          {\faBrain\; Couche IA};
+    \node[font=\footnotesize\sffamily\bfseries\color{iacsOrange},
+          anchor=east] at ([xshift=1cm, yshift=0.8cm]alert.north) 
+          {\faShieldAlt\; Couche décision};
+  \end{tikzpicture}
+  \caption{Architecture globale du système de détection d'intrusions}
+  \label{fig:architecture}
+\end{figure}
+
+% -------------------------------------------------------
+\section{Conception détaillée}
+\label{sec:conception_detail}
+
+\subsection{Diagramme de cas d'utilisation}
+
+\hspace{1cm}Le diagramme de cas d'utilisation (figure~\ref{fig:use_case}) présente les interactions principales entre les acteurs et le système.
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+    actor/.style={font=\small\sffamily},
+    usecase/.style={
+      ellipse, draw=iacsTeal, fill=iacsLight!30,
+      minimum width=3cm, minimum height=1cm,
+      font=\small\sffamily, align=center
+    }
+  ]
+    % Acteurs
+    \node[actor] (admin) at (0,0) {\faUserShield};
+    \node[below=0.1cm of admin, font=\scriptsize\sffamily] {Administrateur};
+
+    \node[actor] (analyst) at (0,-4) {\faUserCog};
+    \node[below=0.1cm of analyst, font=\scriptsize\sffamily] {Analyste SOC};
+
+    % Cas d'utilisation
+    \node[usecase] (monitor) at (5, 0) {Monitorer\\le trafic};
+    \node[usecase] (config) at (5, -1.5) {Configurer\\les règles};
+    \node[usecase] (analyze) at (5, -3) {Analyser\\les alertes};
+    \node[usecase] (report) at (5, -4.5) {Générer\\des rapports};
+
+    % Relations
+    \draw[iacsTeal] (admin) -- (monitor);
+    \draw[iacsTeal] (admin) -- (config);
+    \draw[iacsTeal] (analyst) -- (analyze);
+    \draw[iacsTeal] (analyst) -- (report);
+    \draw[iacsTeal, dashed] (admin) -- (analyze);
+
+    % Système
+    \draw[iacsTeal, rounded corners=8pt, thick] 
+      (3, 1) rectangle (7.5, -5.5);
+    \node[font=\footnotesize\sffamily\bfseries\color{iacsTeal}] 
+      at (5.25, 0.7) {Système IDS-IA};
+  \end{tikzpicture}
+  \caption{Diagramme de cas d'utilisation}
+  \label{fig:use_case}
+\end{figure}
+
+\subsection{Architecture du modèle CNN}
+
+Le réseau proposé se compose des couches suivantes (figure~\ref{fig:cnn_arch}) :
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+    layer/.style={
+      rectangle, rounded corners=3pt,
+      minimum width=1.8cm, minimum height=0.8cm,
+      font=\scriptsize\sffamily\bfseries, align=center,
+      line width=0.5pt
+    },
+    arrow/.style={-Stealth, thick, color=iacsGray}
+  ]
+    \node[layer, draw=iacsTeal, fill=iacsTeal!20] (input) {Input\\$n \times m$};
+    \node[layer, draw=iacsAccent, fill=iacsAccent!15, right=0.5cm of input] (conv1) {Conv1D\\64 filtres};
+    \node[layer, draw=iacsAccent, fill=iacsAccent!15, right=0.5cm of conv1] (pool1) {MaxPool\\$2 \times 1$};
+    \node[layer, draw=iacsGreen!70!black, fill=iacsGreen!15, right=0.5cm of pool1] (conv2) {Conv1D\\128 filtres};
+    \node[layer, draw=iacsGreen!70!black, fill=iacsGreen!15, right=0.5cm of conv2] (pool2) {MaxPool\\$2 \times 1$};
+    \node[layer, draw=iacsOrange, fill=iacsOrange!15, right=0.5cm of pool2] (fc) {Dense\\256};
+    \node[layer, draw=iacsRed!70, fill=iacsRed!10, right=0.5cm of fc] (out) {Softmax\\$k$ classes};
+
+    \draw[arrow] (input) -- (conv1);
+    \draw[arrow] (conv1) -- (pool1);
+    \draw[arrow] (pool1) -- (conv2);
+    \draw[arrow] (conv2) -- (pool2);
+    \draw[arrow] (pool2) -- (fc);
+    \draw[arrow] (fc) -- (out);
+  \end{tikzpicture}
+  \caption{Architecture du modèle CNN proposé}
+  \label{fig:cnn_arch}
+\end{figure}
+
+% -------------------------------------------------------
+\section{Environnement et outils de développement}
+\label{sec:outils}
+
+\subsection{Technologies utilisées}
+
+Le tableau~\ref{tab:technologies} résume les technologies et frameworks utilisés.
+
+\begin{table}[H]
+  \centering
+  \caption{Technologies et outils de développement}
+  \label{tab:technologies}
+  \renewcommand{\arraystretch}{1.4}
+  \begin{tabular}{|>{\centering\arraybackslash}m{2.5cm}|l|l|}
+    \hline
+    \rowcolor{iacsTableHead}
+    \textcolor{white}{\textbf{Catégorie}} & 
+    \textcolor{white}{\textbf{Outil}} & 
+    \textcolor{white}{\textbf{Version}} \\
+    \hline
+    \multirow{2}{*}{Langage} 
+      & Python & 3.11 \\
+      \cline{2-3}
+      & JavaScript & ES2023 \\
+    \hline
+    \rowcolor{iacsLightGray}
+    \multirow{2}{*}{Frameworks IA} 
+      & TensorFlow & 2.15 \\
+      \cline{2-3}
+      \rowcolor{iacsLightGray}
+      & Scikit-learn & 1.4 \\
+    \hline
+    \multirow{2}{*}{Sécurité} 
+      & Scapy & 2.5 \\
+      \cline{2-3}
+      & Snort & 3.1 \\
+    \hline
+    \rowcolor{iacsLightGray}
+    Base de données & MongoDB & 7.0 \\
+    \hline
+    Conteneurisation & Docker & 24.0 \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\subsection{Captures d'écran}
+
+Les figures~\ref{fig:screenshots} montrent des captures d'écran de l'interface développée.
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[b]{0.45\textwidth}
+    \centering
+    \fcolorbox{iacsTeal}{iacsLight!20}{%
+      \begin{minipage}{0.9\textwidth}
+        \centering
+        \vspace{1.5cm}
+        {\small\sffamily\color{iacsGray} Capture d'écran 1\\
+        \textit{(insérer image)}}
+        \vspace{1.5cm}
+      \end{minipage}
+    }
+    \caption{Interface de monitoring}
+    \label{fig:screen_monitor}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.45\textwidth}
+    \centering
+    \fcolorbox{iacsTeal}{iacsLight!20}{%
+      \begin{minipage}{0.9\textwidth}
+        \centering
+        \vspace{1.5cm}
+        {\small\sffamily\color{iacsGray} Capture d'écran 2\\
+        \textit{(insérer image)}}
+        \vspace{1.5cm}
+      \end{minipage}
+    }
+    \caption{Tableau de bord des alertes}
+    \label{fig:screen_alerts}
+  \end{subfigure}
+  \caption{Captures d'écran de l'interface}
+  \label{fig:screenshots}
+\end{figure}
+
+\iacswarning{N'oubliez pas d'insérer vos propres captures d'écran en remplaçant les placeholders ci-dessus par~: \texttt{\textbackslash includegraphics[width=\textbackslash linewidth]\{figures/votre\_image.png\}}}
+
+% -------------------------------------------------------
+\section{Résultats et discussion}
+\label{sec:resultats}
+
+\subsection{Matrice de confusion}
+
+La figure~\ref{fig:confusion} présente la matrice de confusion obtenue.
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[scale=1.2]
+    % Matrice
+    \fill[iacsGreen!25] (0,1) rectangle (1,2);
+    \fill[iacsRed!15] (1,1) rectangle (2,2);
+    \fill[iacsRed!15] (0,0) rectangle (1,1);
+    \fill[iacsGreen!25] (1,0) rectangle (2,2);
+    \fill[iacsGreen!25] (1,0) rectangle (2,1);
+
+    \draw[iacsTeal, thick] (0,0) grid (2,2);
+
+    % Valeurs
+    \node[font=\large\bfseries\color{iacsGreen!70!black}] at (0.5,1.5) {1842};
+    \node[font=\large\bfseries\color{iacsRed}] at (1.5,1.5) {23};
+    \node[font=\large\bfseries\color{iacsRed}] at (0.5,0.5) {31};
+    \node[font=\large\bfseries\color{iacsGreen!70!black}] at (1.5,0.5) {1604};
+
+    % Labels
+    \node[font=\small\sffamily, anchor=south] at (0.5,2.1) {Normal};
+    \node[font=\small\sffamily, anchor=south] at (1.5,2.1) {Attaque};
+    \node[font=\small\sffamily\bfseries, anchor=south] at (1,2.5) {Prédit};
+
+    \node[font=\small\sffamily, rotate=90, anchor=south] at (-0.3,1.5) {Normal};
+    \node[font=\small\sffamily, rotate=90, anchor=south] at (-0.3,0.5) {Attaque};
+    \node[font=\small\sffamily\bfseries, rotate=90, anchor=south] at (-0.7,1) {Réel};
+  \end{tikzpicture}
+  \caption{Matrice de confusion du modèle proposé}
+  \label{fig:confusion}
+\end{figure}
+
+\subsection{Résultats quantitatifs}
+
+Le tableau~\ref{tab:resultats} résume les performances obtenues.
+
+\begin{table}[H]
+  \centering
+  \caption{Résultats de classification par type d'attaque}
+  \label{tab:resultats}
+  \renewcommand{\arraystretch}{1.3}
+  \begin{tabular}{|l|c|c|c|c|}
+    \hline
+    \rowcolor{iacsTableHead}
+    \textcolor{white}{\textbf{Classe}} & 
+    \textcolor{white}{\textbf{Précision}} & 
+    \textcolor{white}{\textbf{Rappel}} & 
+    \textcolor{white}{\textbf{F1-score}} & 
+    \textcolor{white}{\textbf{Support}} \\
+    \hline
+    Normal    & 0,983 & 0,988 & 0,985 & 1\,865 \\
+    \hline
+    \rowcolor{iacsLightGray}
+    DoS       & 0,972 & 0,965 & 0,968 & 892 \\
+    \hline
+    Probe     & 0,951 & 0,943 & 0,947 & 421 \\
+    \hline
+    \rowcolor{iacsLightGray}
+    R2L       & 0,934 & 0,912 & 0,923 & 215 \\
+    \hline
+    U2R       & 0,918 & 0,897 & 0,907 & 107 \\
+    \hline
+    \rowcolor{iacsTeal!10}
+    \textbf{Moyenne} & \textbf{0,963} & \textbf{0,958} & \textbf{0,960} & \textbf{3\,500} \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\section*{Conclusion}
+
+Ce chapitre a présenté la conception et la réalisation du système proposé. Les résultats obtenus démontrent l'efficacité de l'approche basée sur les \gls{cnn} pour la détection d'intrusions, avec une précision globale de 96,3\%.

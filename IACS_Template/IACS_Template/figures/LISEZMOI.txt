@@ -1,0 +1,6 @@
+Placer ici vos images :
+- logo_usms.png    (Logo Université Sultan Moulay Slimane)
+- logo_ensa.png    (Logo ENSA Béni Mellal)
+- Captures d'écran de votre application
+- Diagrammes exportés
+- Toute autre figure référencée dans le rapport

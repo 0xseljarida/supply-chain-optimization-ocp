@@ -1,0 +1,363 @@
+% ============================================================
+%  CHAPITRE III : Conception, réalisation et résultats
+% ============================================================
+\chapter{Conception, réalisation et résultats}
+\label{chap:conception}
+
+\section*{Introduction}
+
+Ce chapitre décrit la mise en \oe uvre de la démarche. Il présente
+successivement l'architecture de la solution, la chaîne de préparation des
+données, l'analyse du portefeuille de références, le calcul des paramètres de
+gestion, le tableau de bord développé, puis les résultats obtenus et leur
+interprétation.
+
+% -------------------------------------------------------
+\section{Architecture de la solution}
+\label{sec:architecture}
+
+\subsection{Vue d'ensemble}
+
+La figure~\ref{fig:architecture} illustre l'enchaînement des traitements, de
+l'export brut fourni par l'\gls{ocp} jusqu'aux livrables destinés aux équipes.
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+    node distance=1.1cm and 1.6cm,
+    block/.style={
+      rectangle, draw=iacsTeal, fill=iacsLight!50,
+      rounded corners=5pt, minimum width=2.9cm,
+      minimum height=1.1cm, align=center,
+      font=\scriptsize\sffamily, line width=0.8pt
+    },
+    dbblock/.style={
+      cylinder, draw=iacsTeal, fill=iacsGreen!15,
+      shape border rotate=90, aspect=0.25,
+      minimum width=1.9cm, minimum height=1.1cm,
+      font=\scriptsize\sffamily, line width=0.8pt
+    },
+    outblock/.style={block, fill=iacsOrange!15, draw=iacsOrange},
+    arrow/.style={-Stealth, thick, color=iacsTeal},
+    dataarrow/.style={-Stealth, thick, color=iacsAccent, dashed}
+  ]
+    % Couche données
+    \node[dbblock] (source) {Export\\Excel};
+    \node[block, right=of source] (clean) {Nettoyage\\\& contrôles};
+    \node[block, right=of clean]  (feat)  {Calcul des\\indicateurs};
+
+    % Couche analyse
+    \node[block, below=1.4cm of feat, fill=iacsTeal!15]
+      (segment) {\textbf{Segmentation}\\ABC / XYZ};
+    \node[block, left=of segment, fill=iacsTeal!15]
+      (calc) {\textbf{Paramètres}\\SS, ROP, EOQ};
+    \node[block, left=of calc, fill=iacsTeal!15]
+      (simul) {\textbf{Simulation}\\service / coût};
+
+    % Couche restitution
+    \node[outblock, below=1.4cm of calc] (dash) {Tableau de bord\\Streamlit};
+    \node[outblock, left=of dash]  (xls)  {Export\\Excel};
+    \node[outblock, right=of dash] (rap)  {Rapport\\\& graphiques};
+
+    \draw[arrow] (source) -- (clean);
+    \draw[arrow] (clean) -- (feat);
+    \draw[arrow] (feat) -- (segment);
+    \draw[arrow] (segment) -- (calc);
+    \draw[arrow] (calc) -- (simul);
+    \draw[arrow] (calc) -- (dash);
+    \draw[dataarrow] (simul) -- (xls);
+    \draw[dataarrow] (segment.south) to[out=-60, in=30] (rap.north east);
+  \end{tikzpicture}
+  \caption{Architecture générale de la solution}
+  \label{fig:architecture}
+\end{figure}
+
+\subsection{Choix technologiques}
+
+L'ensemble de la solution repose sur des outils libres et gratuits, exécutés
+sous Debian dans un environnement virtuel Python isolé. Le
+tableau~\ref{tab:outils} de l'annexe~A détaille le rôle de chaque composant.
+
+\iacsnote{Le choix d'une pile entièrement libre répond à une contrainte du
+cahier des charges : la solution doit rester reproductible et transférable sans
+coût de licence.}
+
+% -------------------------------------------------------
+\section{Préparation des données}
+\label{sec:preparation}
+
+\subsection{Sources et périmètre}
+
+\hspace{1cm}[Décrire l'export reçu : nature, période couverte, nombre de
+références, nombre de lignes de mouvement, périmètre retenu.]
+
+\subsection{Contrôles de qualité}
+
+Les contrôles appliqués avant toute analyse sont résumés dans le
+tableau~\ref{tab:controles}.
+
+\begin{table}[H]
+  \centering
+  \caption{Contrôles de qualité appliqués aux données}
+  \label{tab:controles}
+  \renewcommand{\arraystretch}{1.4}
+  \begin{tabularx}{\textwidth}{|l|X|c|}
+    \hline
+    \rowcolor{iacsTableHead}
+    \textcolor{white}{\textbf{Contrôle}} &
+    \textcolor{white}{\textbf{Traitement appliqué}} &
+    \textcolor{white}{\textbf{Lignes concernées}} \\
+    \hline
+    Doublons            & Suppression des mouvements identiques        & [\ldots] \\
+    \hline
+    \rowcolor{iacsLightGray}
+    Valeurs manquantes  & Imputation ou exclusion selon le champ       & [\ldots] \\
+    \hline
+    Quantités négatives & Distinction retour / erreur de saisie        & [\ldots] \\
+    \hline
+    \rowcolor{iacsLightGray}
+    Dates aberrantes    & Exclusion hors période d'étude               & [\ldots] \\
+    \hline
+    Références inactives& Isolement des articles sans mouvement        & [\ldots] \\
+    \hline
+  \end{tabularx}
+\end{table}
+
+\subsection{Construction de la série de consommation}
+
+L'algorithme~\ref{algo:agregation} décrit la construction de la série
+mensuelle de consommation par référence.
+
+\begin{algorithm}[H]
+  \caption{Agrégation de la consommation par référence et par mois}
+  \label{algo:agregation}
+  \KwEntree{Table des mouvements de stock $M$, période d'étude $[t_{0}, t_{1}]$}
+  \KwSortie{Matrice de consommation mensuelle $C$}
+  Filtrer $M$ sur les mouvements de sortie et sur $[t_{0}, t_{1}]$\;
+  Extraire le mois de chaque mouvement\;
+  \ForEach{référence $i$}{
+    \ForEach{mois $t$ de la période}{
+      $C[i, t] \leftarrow$ somme des quantités sorties\;
+      \If{aucun mouvement}{
+        $C[i, t] \leftarrow 0$ \tcp*{mois sans consommation}
+      }
+    }
+  }
+  \KwRet{$C$}\;
+\end{algorithm}
+
+\begin{lstlisting}[language=Python, caption={Agrégation de la consommation mensuelle}, label={lst:agregation}]
+import pandas as pd
+
+mouvements = pd.read_excel("data/raw/mouvements.xlsx")
+
+sorties = mouvements[mouvements["type_mouvement"] == "SORTIE"].copy()
+sorties["mois"] = sorties["date_mouvement"].dt.to_period("M")
+
+conso = (
+    sorties
+    .groupby(["code_article", "mois"], as_index=False)["quantite"]
+    .sum()
+    .pivot(index="code_article", columns="mois", values="quantite")
+    .fillna(0)
+)
+\end{lstlisting}
+
+% -------------------------------------------------------
+\section{Analyse du portefeuille de références}
+\label{sec:analyse_portefeuille}
+
+\subsection{Classification ABC}
+
+\hspace{1cm}[Insérer la courbe de Pareto obtenue et commenter la répartition
+réelle entre les classes A, B et C.]
+
+\begin{table}[H]
+  \centering
+  \caption{Résultats de la classification ABC}
+  \label{tab:resultats_abc}
+  \renewcommand{\arraystretch}{1.4}
+  \begin{tabularx}{\textwidth}{|c|c|c|c|X|}
+    \hline
+    \rowcolor{iacsTableHead}
+    \textcolor{white}{\textbf{Classe}} &
+    \textcolor{white}{\textbf{Nb réf.}} &
+    \textcolor{white}{\textbf{\% réf.}} &
+    \textcolor{white}{\textbf{\% valeur}} &
+    \textcolor{white}{\textbf{Commentaire}} \\
+    \hline
+    A & [\ldots] & [\ldots] & [\ldots] & \\
+    \hline
+    \rowcolor{iacsLightGray}
+    B & [\ldots] & [\ldots] & [\ldots] & \\
+    \hline
+    C & [\ldots] & [\ldots] & [\ldots] & \\
+    \hline
+  \end{tabularx}
+\end{table}
+
+\subsection{Classification XYZ et matrice croisée}
+
+\hspace{1cm}[Présenter la distribution du coefficient de variation, les seuils
+retenus pour séparer X, Y et Z, puis la matrice croisée ABC/XYZ à neuf cases.]
+
+\subsection{Analyse des délais fournisseurs}
+
+\hspace{1cm}[Comparer les délais théoriques et les délais réellement observés,
+et caractériser leur dispersion $\sigma_{L}$ par famille ou par fournisseur.]
+
+% -------------------------------------------------------
+\section{Calcul des paramètres de gestion}
+\label{sec:calcul_parametres}
+
+\subsection{Règles retenues par segment}
+
+Le tableau~\ref{tab:regles_segment} associe à chaque case de la matrice
+ABC/XYZ un mode de gestion et un taux de service cible.
+
+\begin{table}[H]
+  \centering
+  \caption{Règles de gestion par segment}
+  \label{tab:regles_segment}
+  \renewcommand{\arraystretch}{1.4}
+  \begin{tabularx}{\textwidth}{|c|X|c|}
+    \hline
+    \rowcolor{iacsTableHead}
+    \textcolor{white}{\textbf{Segment}} &
+    \textcolor{white}{\textbf{Mode de gestion}} &
+    \textcolor{white}{\textbf{Service cible}} \\
+    \hline
+    AX & Point de commande automatique, suivi hebdomadaire & [\ldots] \\
+    \hline
+    \rowcolor{iacsLightGray}
+    AY / AZ & Suivi rapproché, arbitrage manuel & [\ldots] \\
+    \hline
+    BX / BY & Règles automatiques, revue mensuelle & [\ldots] \\
+    \hline
+    \rowcolor{iacsLightGray}
+    CX / CY & Recomplètement périodique, lots larges & [\ldots] \\
+    \hline
+    BZ / CZ & Gestion à la demande, pas de stock permanent & [\ldots] \\
+    \hline
+  \end{tabularx}
+\end{table}
+
+\subsection{Implémentation}
+
+\begin{lstlisting}[language=Python, caption={Calcul du stock de sécurité et du point de commande}, label={lst:ss_rop}]
+import numpy as np
+from scipy.stats import norm
+
+def stock_securite(sigma_d, d_moyen, lead_time, sigma_lt, service_cible):
+    """Stock de securite avec demande et delai incertains."""
+    z = norm.ppf(service_cible)
+    return z * np.sqrt(lead_time * sigma_d**2 + d_moyen**2 * sigma_lt**2)
+
+def point_de_commande(d_moyen, lead_time, ss):
+    return d_moyen * lead_time + ss
+
+def quantite_economique(demande_annuelle, cout_passation, cout_possession):
+    return np.sqrt(2 * demande_annuelle * cout_passation / cout_possession)
+\end{lstlisting}
+
+\subsection{Hypothèses de coûts}
+
+\iacswarning{Le coût de passation $S$ et le taux de possession $i$ ne figurent
+pas dans l'export de données ; ils doivent être estimés avec les services
+concernés. Les résultats seront présentés sous forme d'analyse de sensibilité à
+ces deux paramètres.}
+
+% -------------------------------------------------------
+\section{Tableau de bord}
+\label{sec:dashboard}
+
+\subsection{Fonctionnalités}
+
+\begin{itemize}
+  \item Vue d'ensemble du portefeuille : valeur du stock, taux de rotation,
+    part des références dormantes.
+  \item Exploration par famille, par classe \gls{abc}/\gls{xyz} ou par
+    fournisseur.
+  \item Fiche par référence : historique de consommation, paramètres calculés,
+    couverture actuelle.
+  \item Simulateur : effet d'un taux de service cible sur la valeur totale du
+    stock de sécurité.
+  \item Export des résultats au format Excel.
+\end{itemize}
+
+\subsection{Captures d'écran}
+
+\hspace{1cm}[Insérer ici les captures du tableau de bord avec
+\texttt{\textbackslash includegraphics}, en plaçant les images dans
+\texttt{figures/}.]
+
+% -------------------------------------------------------
+\section{Résultats}
+\label{sec:resultats}
+
+\subsection{Situation actuelle et situation optimisée}
+
+\begin{table}[H]
+  \centering
+  \caption{Comparaison avant / après optimisation}
+  \label{tab:comparaison}
+  \renewcommand{\arraystretch}{1.4}
+  \begin{tabularx}{\textwidth}{|X|c|c|c|}
+    \hline
+    \rowcolor{iacsTableHead}
+    \textcolor{white}{\textbf{Indicateur}} &
+    \textcolor{white}{\textbf{Actuel}} &
+    \textcolor{white}{\textbf{Optimisé}} &
+    \textcolor{white}{\textbf{Écart}} \\
+    \hline
+    Valeur du stock          & [\ldots] & [\ldots] & [\ldots] \\
+    \hline
+    \rowcolor{iacsLightGray}
+    Taux de service estimé   & [\ldots] & [\ldots] & [\ldots] \\
+    \hline
+    Taux de rotation         & [\ldots] & [\ldots] & [\ldots] \\
+    \hline
+    \rowcolor{iacsLightGray}
+    Couverture moyenne (j)   & [\ldots] & [\ldots] & [\ldots] \\
+    \hline
+    Valeur du stock dormant  & [\ldots] & [\ldots] & [\ldots] \\
+    \hline
+  \end{tabularx}
+\end{table}
+
+\subsection{Courbe d'arbitrage service / coût}
+
+\hspace{1cm}[Insérer la courbe donnant la valeur du stock de sécurité en
+fonction du taux de service cible, et identifier le point d'inflexion au-delà
+duquel chaque point de service supplémentaire devient disproportionnellement
+coûteux.]
+
+\subsection{Analyse de sensibilité}
+
+\hspace{1cm}[Présenter l'effet d'une variation du taux de possession et du coût
+de passation sur les quantités de commande et sur les gains annoncés.]
+
+% -------------------------------------------------------
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Interprétation}
+
+\hspace{1cm}[Interpréter les résultats : quels segments concentrent les gains,
+quelle est la part attribuable à la réduction du surstock et celle attribuable
+à la fiabilisation des délais.]
+
+\subsection{Limites}
+
+\begin{itemize}
+  \item Qualité et profondeur de l'historique disponible.
+  \item Hypothèses de normalité peu adaptées aux demandes intermittentes.
+  \item Coûts de passation, de possession et de rupture estimés et non mesurés.
+  \item Résultats issus d'une simulation et non d'une mise en production.
+\end{itemize}
+
+\section*{Conclusion}
+
+Ce chapitre a présenté la chaîne de traitement mise en place, les paramètres de
+gestion calculés et les gains simulés. La conclusion générale dresse le bilan du
+travail et ouvre sur les perspectives d'industrialisation.

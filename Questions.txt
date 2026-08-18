@@ -1,0 +1,6 @@
+1. Quel est le principal problème aujourd'hui : les ruptures de stock, le surstock, ou les délais fournisseurs ?
+
+2. Puis-je avoir un export de l'historique des consommations et des stocks sur les 2 à 3 dernières années ?
+
+3. Sur quel périmètre dois-je travailler : toutes les références, ou une famille en particulier ?
+

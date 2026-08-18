@@ -1,0 +1,527 @@
+% ============================================================
+%  RAPPORT DE PFA — IACS
+%  Optimisation de la Supply Chain — OCP
+%  École Nationale des Sciences Appliquées de Béni Mellal
+%  Université Sultan Moulay Slimane
+%  Année universitaire : 2025-2026
+% ============================================================
+\documentclass[12pt, a4paper, oneside]{report}
+
+% --- Chargement de la configuration ---
+\input{config/packages}
+
+% --- Bibliographie ---
+\addbibresource{references.bib}
+
+% --- Glossaire ---
+\input{config/glossary}
+
+% --- Métadonnées PDF ---
+\hypersetup{
+  pdftitle={Optimisation de la gestion des stocks dans la Supply Chain - OCP - ENSA Béni Mellal},
+  pdfauthor={ELJARIDA Saad Eddine},
+  pdfsubject={Projet de Fin d'Année - Stage OCP},
+  pdfkeywords={Supply Chain, Gestion des stocks, Optimisation, Prévision de la demande, OCP, ENSA, IACS}
+}
+
+% ============================================================
+\begin{document}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  PAGE DE GARDE
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{titlepage}
+\begin{tikzpicture}[remember picture, overlay]
+
+  % --- Bordure supérieure fine ---
+  \fill[iacsPrimary]
+    ([yshift=-2mm]current page.north west) rectangle ([yshift=-5mm]current page.north east);
+
+  % --- Bordure inférieure fine ---
+  \fill[iacsPrimary]
+    ([yshift=5mm]current page.south west) rectangle ([yshift=2mm]current page.south east);
+
+  % --- Filigrane décoratif discret (motif circuit) ---
+  %\foreach \i in {1,...,5}{
+    %\draw[iacsPrimary!8, line width=0.3pt]
+      %([xshift=\i*3cm, yshift=-4cm]current page.north west) --
+      %([xshift=\i*3cm]current page.south west);
+  %}
+  %\foreach \j in {1,...,8}{
+    %\draw[iacsPrimary!6, line width=0.2pt]
+      %([yshift=-\j*3cm]current page.north west) --
+      %([yshift=-\j*3cm]current page.north east);
+  %}
+
+  % ===========================================================
+  %  EN-TÊTE : Logo ENSA (gauche) + Texte université (droite)
+  % ===========================================================
+  \node[anchor=north west] at ([xshift=1.5cm, yshift=-1.2cm]current page.north west) {
+     \includegraphics[height=2.5cm]{figures/logo_ensa.png}
+    
+  };
+ 
+\node[anchor=north east] at ([xshift=-5cm, yshift=-1.6cm]current page.north east) {
+    \begin{minipage}{9cm}
+      \centering
+      \textcolor{black}{\small\bfseries Université Sultan Moulay Slimane}\\
+      \textcolor{iacsTeal}{\large\bfseries École Nationale des Sciences Appliquées}\\
+      \textcolor{iacsTeal}{\small\bfseries Béni Mellal}
+    \end{minipage}
+  };
+ 
+
+
+  % --- Ligne séparatrice sous l'en-tête ---
+  \draw[iacsPrimary, line width=1.2pt]
+    ([xshift=1.5cm, yshift=-4cm]current page.north west) --
+    ([xshift=-1.5cm, yshift=-4cm]current page.north east);
+
+  % ===========================================================
+  %  N° D'ORDRE — aligné à droite
+  % ===========================================================
+  %\node[anchor=north east, font=\normalsize\bfseries\color{iacsPrimary}]
+    %at ([xshift=-1.5cm, yshift=-4.5cm]current page.north east) {
+    %N° d'ordre : IACS-X/2026
+  %};
+
+  % ===========================================================
+  %  TITRE DU DIPLÔME
+  % ===========================================================
+  \node[anchor=north, text width=14cm, align=center]
+    at ([yshift=-5.8cm]current page.north) {
+    {\fontsize{14}{16}\selectfont\color{iacsDark}
+      \textbf{Mémoire de Projet - Module Apprentissage Par Projet}}\\[8pt]
+    {\fontsize{16}{20}\selectfont\bfseries\sffamily\color{iacsPrimary}
+      Filière :}\\[4pt]
+    {\fontsize{18}{22}\selectfont\bfseries\sffamily\color{iacsPrimary}
+      Intelligence Artificielle et Cybersécurité}
+  };
+
+  % --- Séparateur décoratif ---
+  \draw[iacsAccent, line width=1pt]
+    ([xshift=4cm, yshift=-9.2cm]current page.north west) --
+    ([xshift=-4cm, yshift=-9.2cm]current page.north east);
+
+  % ===========================================================
+  %  SOUS LE THÈME + CADRE DU TITRE DU PROJET
+  % ===========================================================
+  \node[anchor=north, font=\large\itshape\color{iacsGray}]
+    at ([yshift=-9.7cm]current page.north) {Sous le thème :};
+
+  \node[
+    anchor=north,
+    draw=iacsPrimary,
+    line width=1.5pt,
+    rounded corners=5pt,
+    fill=iacsLight!40,
+    inner xsep=20pt,
+    inner ysep=14pt,
+    text width=13cm,
+    align=center,
+    drop shadow={shadow xshift=1.5pt, shadow yshift=-1.5pt, opacity=0.12}
+  ] at ([yshift=-10.5cm]current page.north) {
+    {\fontsize{18}{24}\selectfont\bfseries\sffamily\color{iacsPrimary}
+      Optimisation de la gestion des stocks dans la Supply Chain}\\[10pt]
+    {\fontsize{12}{16}\selectfont\itshape\color{iacsSecondary}
+      Répondre à la demande tout en maîtrisant les coûts, la qualité et les volumes}
+  };
+
+  % ===========================================================
+  %  RÉALISÉ PAR / ENCADRÉ PAR
+  % ===========================================================
+  \node[anchor=north, text width=14cm, align=center]
+    at ([yshift=-13.8cm]current page.north) {
+    {\normalsize\color{iacsDark} Réalisé par :}\\[4pt]
+    {\large\bfseries\color{iacsPrimary} ELJARIDA Saad Eddine}\\[14pt]
+    %
+    {\normalsize\color{iacsDark} Encadré par :}\\[4pt]
+    %{\normalsize\bfseries\color{iacsSecondary}
+     % Mme/M. \ldots{} (Organisme d'accueil)}\\[2pt]
+    {\normalsize\bfseries\color{iacsSecondary}
+      M./Mme \ldots{} (OCP)}\\[2pt]
+    {\normalsize\bfseries\color{iacsSecondary}
+      Pr. \ldots{} (ENSA Béni Mellal)}
+  };
+
+  % ===========================================================
+  %  TABLEAU DU JURY
+  % ===========================================================
+  \node[anchor=north, text width=14cm]
+    at ([yshift=-18cm]current page.north) {
+    \centering
+    {\normalsize\bfseries\color{iacsPrimary}
+      Soutenu le xx Mai 2026 devant le jury composé de :}\\[8pt]
+    \renewcommand{\arraystretch}{1.3}
+    \begin{tabular}{>{\raggedright}p{4.5cm} >{\raggedright}p{5cm} >{\raggedright\arraybackslash}p{3.5cm}}
+      \rowcolor{iacsPrimary!12}
+      \textbf{Membre} & \textbf{Établissement} & \textbf{Qualité} \\
+      \hline
+      Pr. \ldots & ENSA Béni Mellal & Rapporteur \\
+      Pr. \ldots & ENSA Béni Mellal & Rapporteur \\
+      Pr. \ldots & ENSA Béni Mellal & Encadrant  \\
+    \end{tabular}
+  };
+
+  % ===========================================================
+  %  ANNÉE UNIVERSITAIRE
+  % ===========================================================
+  \node[anchor=south, font=\large\bfseries\sffamily\color{iacsPrimary}]
+    at ([yshift=1.2cm]current page.south) {
+    Année universitaire : 2025--2026
+  };
+
+\end{tikzpicture}
+\end{titlepage}
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  NUMÉROTATION ROMAINE — FRONTMATTER
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\pagenumbering{roman}
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  AVANT-PROPOS
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter*{Avant-propos}
+\addcontentsline{toc}{chapter}{Avant-propos}
+\markboth{Avant-propos}{Avant-propos}
+
+Ce rapport constitue le mémoire de \gls{pfa} réalisé dans le cadre de la formation d'Ingénieur d'État en \textbf{Intelligence Artificielle et Cybersécurité (IACS)} à l'École Nationale des Sciences Appliquées de Béni Mellal (ENSA-BM), rattachée à l'Université Sultan Moulay Slimane.
+
+Le projet s'est déroulé au sein du groupe \textbf{\gls{ocp}}, durant la période allant du \textbf{[date début]} au \textbf{[date fin]}.
+
+Il porte sur l'optimisation de la gestion des stocks au sein de la \gls{sc} : comment garantir la disponibilité des références nécessaires à l'exploitation tout en maîtrisant le capital immobilisé, la qualité de service et les volumes commandés.
+
+\vfill
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  RÉSUMÉ
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter*{Résumé}
+\addcontentsline{toc}{chapter}{Résumé}
+\markboth{Résumé}{Résumé}
+
+\begin{tcolorbox}[colback=iacsLight!30, colframe=iacsPrimary, boxrule=0.5pt, arc=3pt]
+  \textbf{Résumé ---}
+  [À rédiger en fin de projet, 250 à 350 mots. Structure attendue : contexte
+  (la \gls{sc} de l'\gls{ocp} et l'enjeu de la disponibilité des articles) ;
+  problématique (arbitrage entre ruptures de stock et surstock, incertitude sur
+  la demande et sur les délais fournisseurs) ; méthodologie (analyse de
+  l'historique de consommation, classification \gls{abc}/\gls{xyz}, modèles de
+  réapprovisionnement, calcul du stock de sécurité, optimisation des paramètres) ;
+  résultats (gains chiffrés en taux de service et en valeur de stock, outil
+  d'aide à la décision livré).]
+
+  \vspace{6pt}
+  \textbf{Mots-clés :} Supply chain, Gestion des stocks, Stock de sécurité,
+  Taux de service, Prévision de la demande, Classification ABC/XYZ, Optimisation, OCP
+\end{tcolorbox}
+
+\vspace{1cm}
+
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  ملخص
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\chapter*{\begin{center}\textRL{ملخص}\end{center}}
+%\addcontentsline{toc}{chapter}{ملخص}
+%
+%\begin{tcolorbox}[colback=iacsLight!30, colframe=iacsPrimary, boxrule=0.5pt, arc=3pt]
+  %\begin{center}
+    %\textit{Insérer ici le résumé en arabe.}
+  %\end{center}
+%\end{tcolorbox}
+%
+%\vspace{1cm}
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  ABSTRACT
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+\markboth{Abstract}{Abstract}
+
+\begin{tcolorbox}[colback=iacsLight!30, colframe=iacsPrimary, boxrule=0.5pt, arc=3pt]
+  \textbf{Abstract ---}
+  [To be written at the end of the project, 250 to 350 words: context, problem
+  statement, methodology and main results -- English counterpart of the French
+  abstract above.]
+
+  \vspace{6pt}
+  \textbf{Keywords:} Supply chain, Inventory management, Safety stock,
+  Service level, Demand forecasting, ABC/XYZ classification, Optimization, OCP
+\end{tcolorbox}
+
+\newpage
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  DÉDICACE
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter*{Dédicace}
+\addcontentsline{toc}{chapter}{Dédicace}
+\thispagestyle{empty}
+
+\vspace*{4cm}
+\begin{flushright}
+  \begin{minipage}{0.6\textwidth}
+    \begin{flushright}
+      {\large\itshape\color{iacsSecondary}
+        À mes chers parents,\\[4pt]
+        À ma famille,\\[4pt]
+        À tous ceux qui m'ont soutenu\ldots\\[20pt]
+      }
+      {\normalsize\color{iacsGray}
+        La section Dédicace est optionnelle.
+      }
+    \end{flushright}
+  \end{minipage}
+\end{flushright}
+
+\newpage
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  REMERCIEMENTS
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter*{Remerciements}
+\addcontentsline{toc}{chapter}{Remerciements}
+\markboth{Remerciements}{Remerciements}
+
+Avant tout développement sur ce travail, il nous paraît opportun de commencer par adresser nos sincères remerciements à toutes les personnes qui ont contribué, de près ou de loin, à la réalisation de ce projet.
+
+Les remerciements  :
+
+%\begin{enumerate}
+  %\item Le Directeur de l'ENSA-BM, \textbf{Pr. Belaid BOUIKHALENE}
+  %\item Le Directeur adjoint de l'ENSA-BM, \textbf{Pr. Soufiane BELHOUIDEG}
+  %\item Le Coordonnateur de la filière IACS, \textbf{Pr. [Nom]}
+  %\item Le Directeur de l'établissement d'accueil, \textbf{[Prénom \& NOM]}
+  %\item L'encadrant et l'équipe de l'établissement d'accueil, \textbf{[Prénom \& NOM]}
+  %\item L'encadrant pédagogique, \textbf{[Prénom \& NOM]}, ainsi que l'ensemble du corps professoral et administratif de l'ENSA-BM
+  %\item Le jury de soutenance, \textbf{[Prénoms \& NOMS]}
+  %\item Toutes les personnes ayant contribué, de près ou de loin, à la réalisation de ce travail
+%\end{enumerate}
+
+\newpage
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  TABLES DES MATIÈRES, FIGURES, TABLEAUX, etc.
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% --- Sommaire ---
+\tableofcontents
+\newpage
+
+% --- Liste des figures ---
+\listoffigures
+\addcontentsline{toc}{chapter}{Liste des figures}
+\newpage
+
+% --- Liste des tableaux ---
+\listoftables
+\addcontentsline{toc}{chapter}{Liste des tableaux}
+\newpage
+
+% --- Liste des algorithmes ---
+\listofalgorithms
+\addcontentsline{toc}{chapter}{Liste des algorithmes}
+\newpage
+
+% --- Liste des abréviations ---
+\printglossary[type=\acronymtype, title={Liste des abréviations}, toctitle={Liste des abréviations}]
+\newpage
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  CORPS DU DOCUMENT
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\pagenumbering{arabic}
+
+% --- Introduction générale ---
+\input{chapters/introduction}
+
+% --- Chapitre I ---
+\input{chapters/chapter1}
+
+% --- Chapitre II ---
+\input{chapters/chapter2}
+
+% --- Chapitre III ---
+\input{chapters/chapter3}
+
+% --- Conclusion générale ---
+\input{chapters/conclusion}
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  BIBLIOGRAPHIE
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\printbibliography[heading=bibintoc, title={Bibliographie}]
+
+\vspace{1cm}
+\noindent\textcolor{iacsGray}{\small\textit{Format des références bibliographiques :}}
+
+\begin{itemize}[leftmargin=1.5em, itemsep=2pt, label=\textcolor{iacsPrimary}{\textbullet}]
+  \item \textbf{Ouvrages :}
+    {[N]}. Auteurs, année. \textit{Titre}, lieu de publication, éditeur.
+
+  \item \textbf{Thèses :}
+    {[N]}. NOM Prénom. \textit{Titre de la thèse}. Discipline. Lieu : Université, année, pages.
+
+  \item \textbf{Supports de cours :}
+    {[N]}. Auteur, \og Titre du module \fg{}, établissement, université, ville, année, pays.
+
+  \item \textbf{Rapports :}
+    {[N]}. Auteurs, \og Titre du projet \fg{}, Filière, établissement, université, ville, année.
+
+  \item \textbf{Sites web :}
+    {[N]}. Auteur. \textit{Titre} [en ligne]. Disponible sur : \texttt{<URL>}. (Date de consultation).
+
+  \item \textbf{Articles :}
+    {[N]}. Auteur, année. Titre. \textit{Journal}, Volume, Pages.
+\end{itemize}
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  ANNEXES
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\appendix
+
+\chapter*{Annexes}
+\addcontentsline{toc}{chapter}{Annexes}
+\markboth{Annexes}{Annexes}
+
+\section*{Annexe A : Environnement de travail}
+
+L'ensemble des traitements a été réalisé en Python sous Debian, dans un
+environnement virtuel isolé :
+
+\begin{lstlisting}[language=bash, caption={Mise en place de l'environnement}]
+python3 -m venv ~/pfa
+source ~/pfa/bin/activate
+pip install pandas numpy scipy plotly jupyterlab streamlit openpyxl
+\end{lstlisting}
+
+\begin{table}[H]
+  \centering
+  \caption{Outils utilisés et rôle dans le projet}
+  \label{tab:outils}
+  \renewcommand{\arraystretch}{1.3}
+  \small
+  \begin{tabularx}{\textwidth}{|l|l|X|}
+    \hline
+    \rowcolor{iacsTableHead}
+    \textcolor{white}{\textbf{Couche}} &
+    \textcolor{white}{\textbf{Outil}} &
+    \textcolor{white}{\textbf{Rôle}} \\
+    \hline
+    Langage            & Python 3.11    & Langage support de toute l'analyse \\
+    \hline
+    \rowcolor{iacsLightGray}
+    Exploration        & Jupyter Lab    & Analyse pas à pas, résultats immédiats \\
+    \hline
+    Données            & pandas         & Lecture Excel/CSV, filtrage, agrégation \\
+    \hline
+    \rowcolor{iacsLightGray}
+    Calcul             & NumPy / SciPy  & Formules de stock et optimisation \\
+    \hline
+    Visualisation      & Plotly         & Graphiques interactifs du rapport \\
+    \hline
+    \rowcolor{iacsLightGray}
+    Restitution        & Streamlit      & Tableau de bord d'aide à la décision \\
+    \hline
+    Échange            & openpyxl       & Import/export des fichiers Excel \\
+    \hline
+    \rowcolor{iacsLightGray}
+    Versionnement      & Git / GitHub   & Sauvegarde et traçabilité des travaux \\
+    \hline
+  \end{tabularx}
+\end{table}
+
+\section*{Annexe B : Description du jeu de données}
+
+\begin{table}[H]
+  \centering
+  \caption{Champs attendus dans l'historique de consommation et de stock}
+  \label{tab:champs_donnees}
+  \renewcommand{\arraystretch}{1.3}
+  \small
+  \begin{tabularx}{\textwidth}{|c|l|X|}
+    \hline
+    \rowcolor{iacsTableHead}
+    \textcolor{white}{\textbf{\#}} &
+    \textcolor{white}{\textbf{Champ}} &
+    \textcolor{white}{\textbf{Description}} \\
+    \hline
+    1 & \texttt{code\_article}     & Identifiant unique de la référence \\
+    \hline
+    \rowcolor{iacsLightGray}
+    2 & \texttt{designation}       & Libellé de l'article \\
+    \hline
+    3 & \texttt{famille}           & Famille / catégorie d'appartenance \\
+    \hline
+    \rowcolor{iacsLightGray}
+    4 & \texttt{date\_mouvement}   & Date de l'entrée ou de la sortie de stock \\
+    \hline
+    5 & \texttt{quantite}          & Quantité consommée ou reçue \\
+    \hline
+    \rowcolor{iacsLightGray}
+    6 & \texttt{stock\_disponible} & Niveau de stock à la date considérée \\
+    \hline
+    7 & \texttt{prix\_unitaire}    & Valeur unitaire de l'article \\
+    \hline
+    \rowcolor{iacsLightGray}
+    8 & \texttt{delai\_livraison}  & Délai fournisseur observé (jours) \\
+    \hline
+    9 & \texttt{fournisseur}       & Fournisseur de la référence \\
+    \hline
+  \end{tabularx}
+\end{table}
+
+\iacsnote{Le périmètre exact des champs sera arrêté après réception de l'export
+fourni par l'\gls{ocp} ; ce tableau sera mis à jour en conséquence.}
+
+\section*{Annexe C : Rappel des formules de gestion de stock}
+
+\begin{table}[H]
+  \centering
+  \caption{Formules principales utilisées}
+  \label{tab:formules}
+  \renewcommand{\arraystretch}{1.6}
+  \small
+  \begin{tabularx}{\textwidth}{|l|c|X|}
+    \hline
+    \rowcolor{iacsTableHead}
+    \textcolor{white}{\textbf{Grandeur}} &
+    \textcolor{white}{\textbf{Formule}} &
+    \textcolor{white}{\textbf{Paramètres}} \\
+    \hline
+    Quantité économique &
+    $Q^{*} = \sqrt{\dfrac{2DS}{H}}$ &
+    $D$ demande annuelle, $S$ coût de passation, $H$ coût de possession \\
+    \hline
+    \rowcolor{iacsLightGray}
+    Stock de sécurité &
+    $SS = z \cdot \sigma_{LT}$ &
+    $z$ coefficient du taux de service, $\sigma_{LT}$ écart-type sur le délai \\
+    \hline
+    Point de commande &
+    $ROP = \bar{d} \cdot L + SS$ &
+    $\bar{d}$ demande moyenne, $L$ délai de réapprovisionnement \\
+    \hline
+    \rowcolor{iacsLightGray}
+    Taux de rotation &
+    $R = \dfrac{\text{Consommation}}{\text{Stock moyen}}$ &
+    Indicateur de vitesse d'écoulement du stock \\
+    \hline
+  \end{tabularx}
+\end{table}
+
+
+\end{document}
